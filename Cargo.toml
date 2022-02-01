@@ -1,0 +1,29 @@
+[package]
+name = "bevy_particles"
+version = "0.1.0"
+edition = "2021"
+authors = ["Felix de Maneville <felix.maneville@gmail.com>"]
+description = "Particle systems for Bevy engine"
+license = "MIT"
+keywords = ["hexagon", "bestagon", "bevy", "geometry"]
+categories = ["game-development", "mathematics"]
+repository = "https://github.com/ManevilleF/bevy_particles"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dependencies.rand]
+version = "0.8"
+default-features = false
+features =  ["small_rng"]
+
+[dependencies.bevy]
+version = "0.6"
+default-features = false
+features = ["render"]
+
+[dev-dependencies.bevy]
+version = "0.6"
+default-features = false
+features = ["render", "bevy_winit"]
