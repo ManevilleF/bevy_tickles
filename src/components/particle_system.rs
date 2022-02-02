@@ -1,14 +1,16 @@
-use crate::particle::Particle;
-use bevy::prelude::Component;
-use std::ops::{Deref, DerefMut};
+use crate::Particle;
+use bevy::prelude::{Component, GlobalTransform, Reflect, Vec3};
+use bevy::render::primitives::Aabb;
+use itertools::{Itertools, MinMaxResult};
+use std::ops::Deref;
 
 /// Particle System simulation container
-#[derive(Debug, Clone, Default, Component)]
+#[derive(Debug, Clone, Default, Component, Reflect)]
 pub struct ParticleSystem {
     /// Every simulated particles
-    pub particles: Vec<Particle>,
-    /// Simulation start time
-    pub start_time: f32,
+    particles: Vec<Particle>,
+    /// If enabled, the particles won't be stuck to the particle system entity
+    pub world_space: bool,
 }
 
 impl Deref for ParticleSystem {
@@ -19,8 +21,89 @@ impl Deref for ParticleSystem {
     }
 }
 
-impl DerefMut for ParticleSystem {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+impl ParticleSystem {
+    // TODO: Benchmark this and try with `retain_mut` equivalent
+    pub(crate) fn update(&mut self, delta_time: f32) {
+        for particle in &mut self.particles {
+            particle.lifetime -= delta_time;
+            particle.translation += particle.velocity * delta_time;
+            particle.rotation += particle.angular_velocity * delta_time;
+        }
+        self.particles.retain(|particle| particle.lifetime > 0.);
+    }
+
+    /// Computes the complete bounding box of the particle system
+    #[must_use]
+    pub fn compute_aabb(&self) -> Aabb {
+        let (x_min, x_max) = match self.iter().map(|p| p.translation.x).minmax() {
+            MinMaxResult::NoElements => return Aabb::default(),
+            MinMaxResult::OneElement(p) => (p, p),
+            MinMaxResult::MinMax(a, b) => (a, b),
+        };
+        let (y_min, y_max) = match self.iter().map(|p| p.translation.y).minmax() {
+            MinMaxResult::NoElements => return Aabb::default(),
+            MinMaxResult::OneElement(p) => (p, p),
+            MinMaxResult::MinMax(a, b) => (a, b),
+        };
+        let (z_min, z_max) = match self.iter().map(|p| p.translation.z).minmax() {
+            MinMaxResult::NoElements => return Aabb::default(),
+            MinMaxResult::OneElement(p) => (p, p),
+            MinMaxResult::MinMax(a, b) => (a, b),
+        };
+        Aabb::from_min_max(
+            Vec3::new(x_min, y_min, z_min),
+            Vec3::new(x_max, y_max, z_max),
+        )
+    }
+
+    /// Adds a particle to the system
+    ///
+    /// # Arguments
+    ///
+    /// * `particle` - The particle to add
+    /// * `transform` - The particle system global transform, which will be used to compute the
+    /// real particle `translation` in [`ParticleSystem::world_space`] mode
+    pub fn push(&mut self, mut particle: Particle, transform: &GlobalTransform) {
+        if self.world_space {
+            particle.translation = transform
+                .compute_matrix()
+                .transform_point3(particle.translation);
+        }
+        self.particles.push(particle);
+    }
+
+    /// Adds multiple particles to the system
+    ///
+    /// # Arguments
+    ///
+    /// * `particles` - An interator of the particles to add
+    /// * `transform` - The particle system global transform, which will be used to compute the
+    /// real particle `translation` in [`ParticleSystem::world_space`] mode
+    pub fn extend(
+        &mut self,
+        particles: impl Iterator<Item = Particle>,
+        transform: &GlobalTransform,
+    ) {
+        if self.world_space {
+            let matrix = transform.compute_matrix();
+            self.particles
+                .extend(particles.map(|p| p.transformed(&matrix)));
+        } else {
+            self.particles.extend(particles);
+        }
+    }
+
+    /// Retrieves mutably every particle
+    #[inline]
+    #[must_use]
+    pub(crate) fn particles_mut(&mut self) -> &mut Vec<Particle> {
         &mut self.particles
+    }
+
+    /// Retrieves every particle
+    #[inline]
+    #[must_use]
+    pub(crate) fn particles(&self) -> &Vec<Particle> {
+        &self.particles
     }
 }

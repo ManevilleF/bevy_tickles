@@ -1,17 +1,19 @@
-use bevy::prelude::{Component, Mesh, Vec3};
-use rand::{rngs::SmallRng, Rng, SeedableRng};
+use crate::RangeOrFixed;
+use bevy::prelude::{Component, Reflect, Vec3};
+use bevy::reflect::FromReflect;
+use rand::Rng;
 use std::f32::consts::PI;
 
 const PI_2: f32 = PI * 2.0;
 
 #[derive(Debug, Clone)]
-pub(crate) struct EmittedParticle {
+pub struct EmittedParticle {
     pub position: Vec3,
     pub direction: Vec3,
 }
 
 /// Possible [`ParticleEmitter`] shapes
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Reflect)]
 pub enum EmitterShape {
     /// Initializes particles at randomly-sampled positions within a sphere and directs them outwards from the center
     Sphere {
@@ -43,6 +45,30 @@ pub enum EmitterShape {
     // Mesh {
     //     mesh: Mesh
     // }
+}
+
+/// Describes a single Particle emitter burst
+#[derive(Debug, Clone, Reflect)]
+pub struct Burst {
+    /// Time after the start of the emission
+    pub time: f32,
+    /// The count of particles to be emitted
+    pub count: RangeOrFixed<usize>,
+}
+
+/// Emitter of particles, works with [`ParticleSystem`]
+#[derive(Debug, Clone, Component, Reflect)]
+pub struct ParticleEmitter {
+    /// The shape of the emitter
+    pub shape: EmitterShape,
+    /// The rate of particle emission over time (`1.0` means 1 particle per second)
+    pub rate: f32,
+    /// Custom bursts of particle emission
+    pub bursts: Vec<Burst>,
+    /// time since first tick
+    pub current_delta_time: f32,
+    /// Time since last `rate` emission
+    pub last_emitted_delta_time: f32,
 }
 
 impl Default for EmitterShape {
@@ -136,28 +162,10 @@ impl EmitterShape {
     }
 }
 
-/// Describes a single Particle emitter burst
-#[derive(Debug, Clone)]
-pub struct Burst {
-    /// Time after the start of the emission
-    pub time: f32,
-    /// The minimum count of particles to be emitted
-    pub min: u32,
-    /// The maximum count of particles to emitted
-    pub max: u32,
-}
-
-/// Emitter of particles, works with [`ParticleSystem`]
-#[derive(Debug, Clone, Component)]
-pub struct ParticleEmitter {
-    /// The shape of the emitter
-    pub shape: EmitterShape,
-    /// The rate of particle emission over time (`1.0` means 1 particle per second)
-    pub rate: f32,
-    /// Custom bursts of particle emission
-    pub bursts: Vec<Burst>,
-    /// PRNG
-    pub rng: SmallRng,
+impl FromReflect for Burst {
+    fn from_reflect(reflect: &dyn Reflect) -> Option<Self> {
+        reflect.any().downcast_ref::<Self>().cloned()
+    }
 }
 
 impl Default for ParticleEmitter {
@@ -166,7 +174,35 @@ impl Default for ParticleEmitter {
             shape: Default::default(),
             rate: 1.0,
             bursts: vec![],
-            rng: SmallRng::from_entropy(),
+            current_delta_time: 0.0,
+            last_emitted_delta_time: 0.0,
         }
+    }
+}
+
+impl ParticleEmitter {
+    /// Computes particles to emit
+    pub fn emit(&mut self, delta_time: f32, rng: &mut impl Rng) -> Vec<EmittedParticle> {
+        // bursts
+        let mut emission_count = self
+            .bursts
+            .iter()
+            .filter(|b| {
+                b.time >= self.current_delta_time && b.time < self.current_delta_time + delta_time
+            })
+            .map(|b| b.count.evaluate(rng))
+            .sum();
+        self.current_delta_time += delta_time;
+        // emission over time
+        if self.rate > 0.0 {
+            let delta_per_particle = 1.0 / self.rate;
+            let delay_since_emission = self.current_delta_time - self.last_emitted_delta_time;
+            let particles_to_emit = (delay_since_emission / delta_per_particle) as usize;
+            emission_count += particles_to_emit;
+            self.last_emitted_delta_time += delta_per_particle * particles_to_emit as f32;
+        }
+        (0..=emission_count)
+            .map(|_| self.shape.emit_particle(rng))
+            .collect()
     }
 }

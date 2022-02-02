@@ -12,6 +12,7 @@ repository = "https://github.com/ManevilleF/bevy_particles"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+itertools = "0.10"
 
 [dependencies.rand]
 version = "0.8"

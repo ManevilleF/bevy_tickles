@@ -1,13 +1,26 @@
-mod color_modifiers;
-mod max_particle_count;
+mod constraints;
+mod gravity;
+mod size;
+mod velocity;
 
 use crate::ParticleSystem;
 use bevy::prelude::Component;
 
-pub use {color_modifiers::*, max_particle_count::*};
+use crate::particle::Particle;
+pub use {
+    constraints::{MaxParticleCount, MaxParticleSize, MaxParticleSpeed},
+    gravity::ParticleGravity,
+    size::{SizeOverLifetime, SizeOverSpeed},
+};
 
 /// Common trait for particle system modifiers
 pub trait ParticleSystemModifier: Component {
     /// Applies modification to the particle system
     fn apply(&self, particles: &mut ParticleSystem, delta_time: f32);
+}
+
+/// Common trait for particle modifiers
+pub trait ParticleModifier: Component {
+    /// Applies modification to the particle
+    fn apply(&self, particles: &mut Particle, delta_time: f32);
 }
