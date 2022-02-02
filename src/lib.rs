@@ -62,10 +62,15 @@ impl Plugin for ParticlesPlugin {
             .register_type::<ParticleSystem>();
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
+            // TODO: merge all systems in one to avoid so many queries
             .add_system(systems::apply_system_modifier::<MaxParticleCount>.after(PARTICLE_EMISSION))
             .add_system(systems::apply_modifier::<MaxParticleSize>.after(PARTICLE_EMISSION))
             .add_system(systems::apply_modifier::<ParticleGravity>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<MaxParticleSpeed>.after(PARTICLE_UPDATE));
+            .add_system(systems::apply_modifier::<MaxParticleSpeed>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<VelocityOverTime>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE));
         if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
             render_app
                 // .init_resource::<ImageBindGroups>()
