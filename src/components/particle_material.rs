@@ -1,4 +1,5 @@
 use crate::particle::Particle;
+use bevy::ecs::reflect::ReflectComponent;
 use bevy::prelude::{Component, Handle, Image, Reflect, TextureAtlas};
 use bevy::render::texture::DEFAULT_IMAGE_HANDLE;
 use bevy::sprite::Rect;
@@ -59,6 +60,7 @@ pub struct ParticleTextureSheet {
 
 /// The material of the particle, can be a texture or an animated texture sheet
 #[derive(Debug, Clone, Component, Reflect)]
+#[reflect(Component)]
 pub enum ParticleMaterial {
     /// Single image material
     Image(Handle<Image>),

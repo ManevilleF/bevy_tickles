@@ -1,10 +1,12 @@
 use crate::particle::Particle;
 use crate::RangeOrFixed;
+use bevy::ecs::reflect::ReflectComponent;
 use bevy::prelude::{Color, Component, Reflect, Vec3};
 use rand::Rng;
 
 /// Defines the initial state of emitted particles
 #[derive(Debug, Clone, Component, Reflect)]
+#[reflect(Component)]
 pub struct ParticleParams {
     /// Start lifetime of simulated particles
     pub start_lifetime: RangeOrFixed<f32>,
@@ -13,7 +15,9 @@ pub struct ParticleParams {
     /// Start rotation for simulated particles
     pub start_rotation: RangeOrFixed<f32>,
     /// Start velocity for simulated particles
-    pub start_velocity: f32,
+    pub start_velocity: RangeOrFixed<f32>,
+    /// Start velocity for simulated particles
+    pub start_angular_velocity: RangeOrFixed<f32>,
     /// Start color for simulated particles
     pub start_color: RangeOrFixed<Color>,
 }
@@ -35,8 +39,8 @@ impl ParticleParams {
             lifetime,
             start_lifetime: lifetime,
             color: self.start_color.evaluate(rng),
-            velocity: direction * self.start_velocity,
-            angular_velocity: 0.0,
+            velocity: direction * self.start_velocity.evaluate(rng),
+            angular_velocity: self.start_angular_velocity.evaluate(rng),
         }
     }
 }
@@ -47,7 +51,8 @@ impl Default for ParticleParams {
             start_lifetime: RangeOrFixed::Fixed(5.0),
             start_size: RangeOrFixed::Fixed(1.0),
             start_rotation: RangeOrFixed::Fixed(0.0),
-            start_velocity: 1.0,
+            start_velocity: RangeOrFixed::Fixed(1.0),
+            start_angular_velocity: RangeOrFixed::Fixed(0.0),
             start_color: RangeOrFixed::Fixed(Color::WHITE),
         }
     }

@@ -1,4 +1,5 @@
 use crate::Particle;
+use bevy::ecs::reflect::ReflectComponent;
 use bevy::prelude::{Component, GlobalTransform, Reflect, Vec3};
 use bevy::render::primitives::Aabb;
 use itertools::{Itertools, MinMaxResult};
@@ -6,11 +7,12 @@ use std::ops::Deref;
 
 /// Particle System simulation container
 #[derive(Debug, Clone, Default, Component, Reflect)]
+#[reflect(Component)]
 pub struct ParticleSystem {
-    /// Every simulated particles
-    particles: Vec<Particle>,
     /// If enabled, the particles won't be stuck to the particle system entity
     pub world_space: bool,
+    /// Every simulated particle
+    particles: Vec<Particle>,
 }
 
 impl Deref for ParticleSystem {

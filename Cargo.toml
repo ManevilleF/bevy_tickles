@@ -24,7 +24,13 @@ version = "0.6"
 default-features = false
 features = ["render"]
 
+[dev-dependencies]
+bevy-inspector-egui = "0.7"
+
 [dev-dependencies.bevy]
 version = "0.6"
 default-features = false
 features = ["render", "bevy_winit"]
+
+[[example]]
+name = "basic_example"

@@ -30,6 +30,7 @@ pub use particle::Particle;
 pub use utilities::*;
 
 use crate::modifiers::*;
+use crate::render::extract::ExtractedParticles;
 use bevy::log;
 use bevy::prelude::*;
 use bevy::render::{RenderApp, RenderStage};
@@ -71,7 +72,7 @@ impl Plugin for ParticlesPlugin {
                 // .init_resource::<ParticlesPipeline>()
                 // .init_resource::<SpecializedPipelines<ParticlesPipeline>>()
                 // .init_resource::<ParticleMeta>()
-                // .init_resource::<ExtractedParticles>()
+                .init_resource::<ExtractedParticles>()
                 // .add_render_command::<Transparent2d, DrawParticle>()
                 .add_system_to_stage(
                     RenderStage::Extract,

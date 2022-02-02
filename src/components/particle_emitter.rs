@@ -1,4 +1,5 @@
 use crate::RangeOrFixed;
+use bevy::ecs::reflect::ReflectComponent;
 use bevy::prelude::{Component, Reflect, Vec3};
 use bevy::reflect::FromReflect;
 use rand::Rng;
@@ -48,7 +49,7 @@ pub enum EmitterShape {
 }
 
 /// Describes a single Particle emitter burst
-#[derive(Debug, Clone, Reflect)]
+#[derive(Debug, Default, Clone, Reflect)]
 pub struct Burst {
     /// Time after the start of the emission
     pub time: f32,
@@ -58,6 +59,7 @@ pub struct Burst {
 
 /// Emitter of particles, works with [`ParticleSystem`]
 #[derive(Debug, Clone, Component, Reflect)]
+#[reflect(Component)]
 pub struct ParticleEmitter {
     /// The shape of the emitter
     pub shape: EmitterShape,
@@ -201,7 +203,7 @@ impl ParticleEmitter {
             emission_count += particles_to_emit;
             self.last_emitted_delta_time += delta_per_particle * particles_to_emit as f32;
         }
-        (0..=emission_count)
+        (0..emission_count)
             .map(|_| self.shape.emit_particle(rng))
             .collect()
     }
