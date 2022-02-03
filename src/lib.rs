@@ -26,7 +26,7 @@ mod systems;
 mod utilities;
 
 use bevy::core_pipeline::Transparent3d;
-pub use bundle::ParticleSystemBundle;
+pub use bundle::*;
 pub use components::*;
 pub use particle::Particle;
 pub use utilities::*;
@@ -74,9 +74,15 @@ impl Plugin for ParticlesPlugin {
         app.init_resource::<bevy_inspector_egui::InspectableRegistry>()
             .register_inspectable::<ParticleMaterial>()
             .register_inspectable::<ParticleEmitter>()
+            .register_inspectable::<ColorOverLifeTime>()
             .register_inspectable::<RangeOrFixed<f32>>()
             .register_inspectable::<RangeOrFixed<usize>>()
-            .register_inspectable::<RangeOrFixed<Color>>();
+            .register_inspectable::<RangeOrFixed<Color>>()
+            .register_inspectable::<AngularVelocityOverTime>()
+            .register_inspectable::<VelocityOverTime>()
+            .register_inspectable::<ParticleGravity>()
+            .register_inspectable::<SizeOverSpeed>()
+            .register_inspectable::<SizeOverTime>();
 
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
@@ -88,7 +94,8 @@ impl Plugin for ParticlesPlugin {
             .add_system(systems::apply_modifier::<VelocityOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE));
+            .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE));
 
         let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
         let particle_shader = Shader::from_wgsl(include_str!("render/particles.wgsl"));

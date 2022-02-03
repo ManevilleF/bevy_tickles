@@ -2,7 +2,8 @@ use crate::{Particle, ParticleModifier};
 use bevy::prelude::{Component, Reflect};
 
 /// Increases particle velocity over time
-#[derive(Debug, Copy, Clone, Component, Reflect)]
+#[derive(Debug, Copy, Clone, Default, Component, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct VelocityOverTime(pub f32);
 
 impl ParticleModifier for VelocityOverTime {
@@ -12,7 +13,8 @@ impl ParticleModifier for VelocityOverTime {
 }
 
 /// Increases particle velocity over time
-#[derive(Debug, Copy, Clone, Component, Reflect)]
+#[derive(Debug, Copy, Clone, Default, Component, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct AngularVelocityOverTime(pub f32);
 
 impl ParticleModifier for AngularVelocityOverTime {

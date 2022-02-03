@@ -4,6 +4,7 @@ use bevy::prelude::{Component, Reflect};
 
 /// Constraints [`ParticleSystem`] particle system count to a max value
 #[derive(Debug, Copy, Clone, Component, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct MaxParticleCount(pub usize);
 
 impl Default for MaxParticleCount {
@@ -23,6 +24,7 @@ impl ParticleSystemModifier for MaxParticleCount {
 
 /// Constraints [`ParticleSystem`] particle system count to a max speed
 #[derive(Debug, Copy, Clone, Component, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct MaxParticleSpeed(pub f32);
 
 impl Default for MaxParticleSpeed {
@@ -41,6 +43,7 @@ impl ParticleModifier for MaxParticleSpeed {
 
 /// Constraints [`ParticleSystem`] particle system count to a max speed
 #[derive(Debug, Copy, Clone, Component, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct MaxParticleSize(pub f32);
 
 impl Default for MaxParticleSize {

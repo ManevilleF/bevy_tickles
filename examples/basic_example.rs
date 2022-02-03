@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_particles::{ParticleSystemBundle, ParticlesPlugin};
+use bevy_particles::{ExhaustiveParticleSystemBundle, ParticlesPlugin};
 
 fn main() {
     App::new()
@@ -18,6 +18,6 @@ fn spawn_particle_system(mut commands: Commands) {
     });
     commands.spawn_bundle(DirectionalLightBundle::default());
     commands
-        .spawn_bundle(ParticleSystemBundle::default())
+        .spawn_bundle(ExhaustiveParticleSystemBundle::default())
         .insert(Name::new("Particle System"));
 }

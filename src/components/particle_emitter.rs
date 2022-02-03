@@ -177,7 +177,7 @@ impl Default for ParticleEmitter {
     fn default() -> Self {
         Self {
             shape: Default::default(),
-            rate: 1.0,
+            rate: 5.0,
             bursts: vec![],
             current_delta_time: 0.0,
             last_emitted_delta_time: 0.0,

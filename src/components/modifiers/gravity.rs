@@ -3,6 +3,7 @@ use bevy::prelude::{Component, Reflect, Vec3};
 
 /// Gravity for particles
 #[derive(Debug, Clone, Component, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct ParticleGravity(pub Vec3);
 
 impl Default for ParticleGravity {

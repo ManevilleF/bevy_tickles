@@ -1,3 +1,4 @@
+mod color;
 mod constraints;
 mod gravity;
 mod size;
@@ -8,6 +9,7 @@ use bevy::prelude::Component;
 
 use crate::particle::Particle;
 pub use {
+    color::ColorOverLifeTime,
     constraints::{MaxParticleCount, MaxParticleSize, MaxParticleSpeed},
     gravity::ParticleGravity,
     size::{SizeOverSpeed, SizeOverTime},

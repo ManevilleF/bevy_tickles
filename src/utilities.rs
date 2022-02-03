@@ -18,6 +18,27 @@ pub enum RangeOrFixed<T: Copy + Clone + Debug + Send + Sync + Reflect + Default>
     // TODO: Add more range options
 }
 
+#[derive(Copy, Clone, Default, Debug, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
+pub struct ColorGradient {
+    pub start: Color,
+    pub end: Color,
+}
+
+impl From<(Color, Color)> for ColorGradient {
+    fn from((start, end): (Color, Color)) -> Self {
+        Self { start, end }
+    }
+}
+
+impl ColorGradient {
+    pub fn evaluate_linear(&self, delta: f32) -> Color {
+        let min = Vec4::from(self.start.as_rgba());
+        let max = Vec4::from(self.end.as_rgba());
+        Color::from(min + (max - min) * delta.clamp(0.0, 1.0))
+    }
+}
+
 impl Default for RangeOrFixed<f32> {
     fn default() -> Self {
         Self::Fixed(1.0)
@@ -63,9 +84,8 @@ impl RangeOrFixed<Color> {
             RangeOrFixed::Fixed(v) => *v,
             RangeOrFixed::Range { min, max } => {
                 let delta: f32 = rng.gen_range(0.0..=1.0);
-                let min = Vec4::from(min.as_rgba());
-                let max = Vec4::from(max.as_rgba());
-                Color::from(min + (max - min) * delta)
+                let gradient = ColorGradient::from((*min, *max));
+                gradient.evaluate_linear(delta)
             }
         }
     }
