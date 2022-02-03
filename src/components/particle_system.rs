@@ -12,7 +12,7 @@ pub struct ParticleSystem {
     /// If enabled, the particles won't be stuck to the particle system entity
     pub world_space: bool,
     /// Every simulated particle
-    particles: Vec<Particle>,
+    pub(crate) particles: Vec<Particle>,
 }
 
 impl Deref for ParticleSystem {
@@ -95,17 +95,10 @@ impl ParticleSystem {
         }
     }
 
-    /// Retrieves mutably every particle
     #[inline]
     #[must_use]
-    pub(crate) fn particles_mut(&mut self) -> &mut Vec<Particle> {
-        &mut self.particles
-    }
-
-    /// Retrieves every particle
-    #[inline]
-    #[must_use]
-    pub(crate) fn particles(&self) -> &Vec<Particle> {
-        &self.particles
+    /// Iterator on every particle position
+    pub(crate) fn particle_translations(&self) -> Vec<Vec3> {
+        self.particles.iter().map(|p| p.translation).collect()
     }
 }

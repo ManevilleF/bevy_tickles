@@ -16,7 +16,7 @@ impl ParticleSystemModifier for MaxParticleCount {
     fn apply(&self, particles: &mut ParticleSystem, _: f32) {
         let delta = particles.len().saturating_sub(self.0);
         if delta > 0 {
-            particles.particles_mut().drain(0..delta);
+            particles.particles.drain(0..delta);
         }
     }
 }

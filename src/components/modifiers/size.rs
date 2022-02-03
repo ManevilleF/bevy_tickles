@@ -1,6 +1,7 @@
 use crate::{Particle, ParticleModifier};
 use bevy::prelude::{Component, Reflect};
 
+/// Increases particle size over time
 #[derive(Debug, Copy, Clone, Component, Reflect)]
 pub struct SizeOverTime(pub f32);
 
@@ -10,6 +11,7 @@ impl ParticleModifier for SizeOverTime {
     }
 }
 
+/// Increases particle size over its speed
 #[derive(Debug, Copy, Clone, Component, Reflect)]
 pub struct SizeOverSpeed(pub f32);
 

@@ -4,15 +4,16 @@ use bevy::asset::HandleId;
 use bevy::prelude::*;
 use bevy::render::RenderWorld;
 use bevy::sprite::Rect;
-use bevy::utils::HashMap;
 
 #[derive(Component, Clone, Copy)]
 pub struct ExtractedParticle {
-    /// World transform
+    /// Texture handle id
+    pub image_handle_id: HandleId,
+    /// World space position
     pub position: Vec3,
     /// rotation
     pub rotation: f32,
-    /// Sprite color tint
+    /// color tint
     pub color: Color,
     /// Select an area of the texture
     pub rect: Option<Rect>,
@@ -22,7 +23,7 @@ pub struct ExtractedParticle {
 
 #[derive(Default)]
 pub struct ExtractedParticles {
-    pub particles: HashMap<HandleId, Vec<ExtractedParticle>>,
+    pub particles: Vec<ExtractedParticle>,
 }
 
 pub fn extract_particles(
@@ -39,17 +40,20 @@ pub fn extract_particles(
     let mut extracted_particles = render_world
         .get_resource_mut::<ExtractedParticles>()
         .unwrap();
+    // Clear last frame extracted particles
     extracted_particles.particles.clear();
     for (transform, particles, mut rng, material, visibility) in query.iter_mut() {
+        // skips invisible particle systems
         if !visibility.is_visible {
             continue;
         }
         let matrix: Mat4 = transform.compute_matrix();
-        let (image, extracted) = match material {
+        let extracted = match material {
             ParticleMaterial::Image(image) => {
-                let res = particles
+                particles
                     .iter()
                     .map(|p| ExtractedParticle {
+                        image_handle_id: image.id,
                         position: if particles.world_space {
                             p.translation
                         } else {
@@ -60,8 +64,7 @@ pub fn extract_particles(
                         rect: None,
                         size: Vec2::splat(p.size), // TODO: support stretched particles
                     })
-                    .collect::<Vec<ExtractedParticle>>();
-                (image.id, res)
+                    .collect::<Vec<ExtractedParticle>>()
             }
             ParticleMaterial::TextureSheet(sheet) => {
                 let atlas = texture_atlases
@@ -72,9 +75,10 @@ pub fn extract_particles(
                             sheet.texture_atlas.id
                         )
                     });
-                let res = particles
+                particles
                     .iter()
                     .map(|p| ExtractedParticle {
+                        image_handle_id: atlas.texture.id,
                         position: if particles.world_space {
                             p.translation
                         } else {
@@ -85,14 +89,9 @@ pub fn extract_particles(
                         rect: Some(sheet.mode.rect(atlas, p, rng.rng())),
                         size: Vec2::splat(p.size), // TODO: support stretched particles
                     })
-                    .collect::<Vec<ExtractedParticle>>();
-                (atlas.texture.id, res)
+                    .collect::<Vec<ExtractedParticle>>()
             }
         };
-        extracted_particles
-            .particles
-            .entry(image)
-            .or_default()
-            .extend(extracted);
+        extracted_particles.particles.extend(extracted);
     }
 }

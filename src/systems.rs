@@ -47,7 +47,7 @@ where
 {
     let delta = time.delta_seconds();
     for (mut particle_system, modifier) in query.iter_mut() {
-        for particle in particle_system.particles_mut() {
+        for particle in &mut particle_system.particles {
             modifier.apply(particle, delta);
         }
     }

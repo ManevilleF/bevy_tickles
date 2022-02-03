@@ -13,6 +13,7 @@ repository = "https://github.com/ManevilleF/bevy_particles"
 
 [dependencies]
 itertools = "0.10"
+bytemuck = { version = "1.5", features = ["derive"] }
 
 [dependencies.rand]
 version = "0.8"

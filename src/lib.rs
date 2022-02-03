@@ -24,16 +24,22 @@ mod render;
 mod systems;
 mod utilities;
 
+use bevy::core_pipeline::Transparent3d;
 pub use bundle::ParticleSystemBundle;
 pub use components::*;
 pub use particle::Particle;
 pub use utilities::*;
 
 use crate::modifiers::*;
+use crate::render::draw::DrawParticle;
 use crate::render::extract::ExtractedParticles;
+use crate::render::pipeline::{ParticlePipeline, PARTICLE_SHADER_HANDLE};
+use crate::render::queue::ParticleMeta;
 use bevy::log;
 use bevy::prelude::*;
-use bevy::render::{RenderApp, RenderStage};
+use bevy::render::{
+    render_phase::AddRenderCommand, render_resource::SpecializedPipelines, RenderApp, RenderStage,
+};
 
 const PARTICLE_UPDATE: &str = "particle_update";
 const PARTICLE_EMISSION: &str = "particle_emission";
@@ -71,22 +77,26 @@ impl Plugin for ParticlesPlugin {
             .add_system(systems::apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE));
+
+        let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
+        let particle_shader = Shader::from_wgsl(include_str!("render/particles.wgsl"));
+        shaders.set_untracked(PARTICLE_SHADER_HANDLE, particle_shader);
         if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
             render_app
                 // .init_resource::<ImageBindGroups>()
-                // .init_resource::<ParticlesPipeline>()
-                // .init_resource::<SpecializedPipelines<ParticlesPipeline>>()
-                // .init_resource::<ParticleMeta>()
+                .init_resource::<ParticlePipeline>()
+                .init_resource::<SpecializedPipelines<ParticlePipeline>>()
+                .init_resource::<ParticleMeta>()
                 .init_resource::<ExtractedParticles>()
-                // .add_render_command::<Transparent2d, DrawParticle>()
+                .add_render_command::<Transparent3d, DrawParticle>()
                 .add_system_to_stage(
                     RenderStage::Extract,
                     render::extract::extract_particles.label(ParticleLabel::ExtractParticles),
+                )
+                .add_system_to_stage(
+                    RenderStage::Queue,
+                    render::queue::queue_particles.label(ParticleLabel::QueueParticles),
                 );
-            // .add_system_to_stage(
-            //     RenderStage::Queue,
-            //     render::queue::queue_particles.label(ParticlesSystem::QueueParticles),
-            // )
         };
         log::info!("Loaded Particles Plugin");
     }
