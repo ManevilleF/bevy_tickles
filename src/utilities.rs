@@ -1,15 +1,20 @@
 use bevy::prelude::{Color, Reflect, Vec4};
 use rand::Rng;
 use std::fmt::Debug;
-use std::ops::Range;
 
 /// Either a fixed value or a range
-#[derive(Clone, Debug, Reflect)]
-pub enum RangeOrFixed<T: Copy + Clone + Debug + Send + Sync + Reflect> {
+#[derive(Copy, Clone, Debug, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
+pub enum RangeOrFixed<T: Copy + Clone + Debug + Send + Sync + Reflect + Default> {
     /// Fixed value
     Fixed(T),
     /// Linear Range value
-    Range(Range<T>),
+    Range {
+        /// Start value
+        min: T,
+        /// End Value
+        max: T,
+    },
     // TODO: Add more range options
 }
 
@@ -36,7 +41,7 @@ impl RangeOrFixed<f32> {
     pub fn evaluate(&self, rng: &mut impl Rng) -> f32 {
         match self {
             RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range(range) => rng.gen_range(range.start..=range.end),
+            RangeOrFixed::Range { min, max } => rng.gen_range(*min..=*max),
         }
     }
 }
@@ -46,7 +51,7 @@ impl RangeOrFixed<usize> {
     pub fn evaluate(&self, rng: &mut impl Rng) -> usize {
         match self {
             RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range(range) => rng.gen_range(range.start..=range.end),
+            RangeOrFixed::Range { min, max } => rng.gen_range(*min..=*max),
         }
     }
 }
@@ -56,10 +61,10 @@ impl RangeOrFixed<Color> {
     pub fn evaluate(&self, rng: &mut impl Rng) -> Color {
         match self {
             RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range(range) => {
+            RangeOrFixed::Range { min, max } => {
                 let delta: f32 = rng.gen_range(0.0..=1.0);
-                let min = Vec4::from(range.start.as_rgba());
-                let max = Vec4::from(range.end.as_rgba());
+                let min = Vec4::from(min.as_rgba());
+                let max = Vec4::from(max.as_rgba());
                 Color::from(min + (max - min) * delta)
             }
         }

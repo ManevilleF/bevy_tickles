@@ -80,7 +80,5 @@ impl EntityRenderCommand for DrawParticleBatch {
         // We draw only the vertices contained in the batch range
         pass.draw(batch.range.clone(), 0..1);
         RenderCommandResult::Success
-
-        // TODO: Where do I retrieve the Texture ?
     }
 }

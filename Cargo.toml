@@ -11,6 +11,10 @@ repository = "https://github.com/ManevilleF/bevy_particles"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = []
+inspector = ["bevy-inspector-egui"]
+
 [dependencies]
 itertools = "0.10"
 bytemuck = { version = "1.5", features = ["derive"] }
@@ -25,8 +29,11 @@ version = "0.6"
 default-features = false
 features = ["render"]
 
+[dependencies.bevy-inspector-egui]
+version = "0.7"
+optional = true
+
 [dev-dependencies]
-bevy-inspector-egui = "0.7"
 
 [dev-dependencies.bevy]
 version = "0.6"
@@ -35,3 +42,4 @@ features = ["render", "bevy_winit"]
 
 [[example]]
 name = "basic_example"
+required-features = ["inspector"]

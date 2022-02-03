@@ -15,6 +15,7 @@ pub struct EmittedParticle {
 
 /// Possible [`ParticleEmitter`] shapes
 #[derive(Debug, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub enum EmitterShape {
     /// Initializes particles at randomly-sampled positions within a sphere and directs them outwards from the center
     Sphere {
@@ -50,6 +51,7 @@ pub enum EmitterShape {
 
 /// Describes a single Particle emitter burst
 #[derive(Debug, Default, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Burst {
     /// Time after the start of the emission
     pub time: f32,
@@ -60,6 +62,7 @@ pub struct Burst {
 /// Emitter of particles, works with [`ParticleSystem`]
 #[derive(Debug, Clone, Component, Reflect)]
 #[reflect(Component)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct ParticleEmitter {
     /// The shape of the emitter
     pub shape: EmitterShape,

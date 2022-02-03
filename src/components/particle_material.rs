@@ -7,6 +7,7 @@ use rand::Rng;
 
 /// Defines the looping behaviour of the animated sheet
 #[derive(Debug, Copy, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub enum TextureSheetLoopingMode {
     /// The texture sheet is not animated
     None,
@@ -23,6 +24,7 @@ pub enum TextureSheetLoopingMode {
 
 /// Animation params for particle texture sheets
 #[derive(Debug, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct TextureSheetAnimation {
     /// Start cell (usually 0)
     pub start_index: usize,
@@ -36,6 +38,7 @@ pub struct TextureSheetAnimation {
 
 /// Texture Sheet resolve mode for particle systems
 #[derive(Debug, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub enum TextureSheetMode {
     /// Use a single cell of the texture sheet
     FixedIndex(usize),
@@ -50,7 +53,8 @@ pub enum TextureSheetMode {
 }
 
 /// Texture Sheet params for particle systems
-#[derive(Debug, Clone, Reflect)]
+#[derive(Debug, Clone, Reflect, Default)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct ParticleTextureSheet {
     /// Texture atlas handle
     pub texture_atlas: Handle<TextureAtlas>,
@@ -61,6 +65,7 @@ pub struct ParticleTextureSheet {
 /// The material of the particle, can be a texture or an animated texture sheet
 #[derive(Debug, Clone, Component, Reflect)]
 #[reflect(Component)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub enum ParticleMaterial {
     /// Single image material
     Image(Handle<Image>),

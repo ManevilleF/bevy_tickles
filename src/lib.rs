@@ -40,6 +40,8 @@ use bevy::prelude::*;
 use bevy::render::{
     render_phase::AddRenderCommand, render_resource::SpecializedPipelines, RenderApp, RenderStage,
 };
+#[cfg(feature = "inspector")]
+use bevy_inspector_egui::RegisterInspectable;
 
 const PARTICLE_UPDATE: &str = "particle_update";
 const PARTICLE_EMISSION: &str = "particle_emission";
@@ -68,6 +70,14 @@ impl Plugin for ParticlesPlugin {
             .register_type::<ParticleParams>()
             .register_type::<ParticleEmitter>()
             .register_type::<ParticleSystem>();
+        #[cfg(feature = "inspector")]
+        app.init_resource::<bevy_inspector_egui::InspectableRegistry>()
+            .register_inspectable::<ParticleMaterial>()
+            .register_inspectable::<ParticleEmitter>()
+            .register_inspectable::<RangeOrFixed<f32>>()
+            .register_inspectable::<RangeOrFixed<usize>>()
+            .register_inspectable::<RangeOrFixed<Color>>();
+
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
             // TODO: merge all systems in one to avoid so many queries
