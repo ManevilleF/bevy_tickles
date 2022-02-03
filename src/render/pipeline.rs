@@ -68,8 +68,26 @@ impl SpecializedPipeline for ParticlePipeline {
                 topology: PrimitiveTopology::TriangleList,
                 strip_index_format: None,
             },
-            depth_stencil: None,
-            multisample: MultisampleState::default(), // TODO: Support MSAA
+            depth_stencil: Some(DepthStencilState {
+                format: TextureFormat::Depth32Float,
+                depth_write_enabled: false,
+                depth_compare: CompareFunction::Greater,
+                stencil: StencilState {
+                    front: StencilFaceState::IGNORE,
+                    back: StencilFaceState::IGNORE,
+                    read_mask: 0,
+                    write_mask: 0,
+                },
+                bias: DepthBiasState {
+                    constant: 0,
+                    slope_scale: 0.0,
+                    clamp: 0.0,
+                },
+            }), // TODO: Support MSAA
+            multisample: MultisampleState {
+                count: 4,
+                ..Default::default()
+            },
             label: Some("particle_pipeline".into()),
         }
     }
