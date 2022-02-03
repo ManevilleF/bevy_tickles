@@ -20,6 +20,7 @@ use itertools::Itertools;
 use std::cmp::Ordering;
 use std::ops::Range;
 
+/// Single particle vertex representation
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
 pub struct ParticleVertex {
@@ -34,18 +35,21 @@ pub struct ParticleVertex {
 pub struct ParticleMeta {
     /// Every particle vertex information
     pub vertices: BufferVec<ParticleVertex>,
+    /// Bind group corresponding to the pipeline `view_layout` bind group layout
     pub view_bind_group: Option<BindGroup>,
 }
 
 /// Particle batch by texture handle
 #[derive(Component, Clone)]
 pub struct ParticleBatch {
+    /// Texture handle
     pub image_handle_id: HandleId,
+    /// Vertex buffer index range matching the texture id
     pub range: Range<u32>,
 }
 
-pub struct TmpBatch {
-    batch: ParticleBatch,
+struct GroupedVertices {
+    image_handle_id: HandleId,
     vertices: Vec<ParticleVertex>,
 }
 
@@ -58,8 +62,10 @@ impl Default for ParticleMeta {
     }
 }
 
+/// Vertex indices for quad (2 triangles)
 const QUAD_INDICES: [usize; 6] = [0, 2, 3, 0, 1, 2];
 
+/// Relative vertex positions for quads
 const QUAD_VERTEX_POSITIONS: [Vec2; 4] = [
     const_vec2!([-0.5, -0.5]),
     const_vec2!([0.5, -0.5]),
@@ -67,6 +73,7 @@ const QUAD_VERTEX_POSITIONS: [Vec2; 4] = [
     const_vec2!([-0.5, 0.5]),
 ];
 
+/// UV coordinates for quads
 const QUAD_UVS: [Vec2; 4] = [
     const_vec2!([0., 1.]),
     const_vec2!([1., 1.]),
@@ -116,11 +123,11 @@ pub fn queue_particles(
                 Some(other) => other,
             }
         });
-        let mut index = 0;
-        let mut batches = vec![];
+        let mut grouped_vertices = vec![];
         // We group every consecutive particle with equal `image_handle_id` and create batches
         for (image_handle_id, group) in &extracted_particles.iter().group_by(|p| p.image_handle_id)
         {
+            // We compute the vertices for each group
             let vertices: Vec<ParticleVertex> = group
                 .flat_map(|particle| {
                     let mut uvs = QUAD_UVS;
@@ -149,26 +156,29 @@ pub fn queue_particles(
                         .collect::<Vec<ParticleVertex>>()
                 })
                 .collect();
-            let len = vertices.len() as u32;
-            batches.push(TmpBatch {
-                batch: ParticleBatch {
-                    image_handle_id,
-                    range: (index..(index + len)),
-                },
+            grouped_vertices.push(GroupedVertices {
+                // The batch component with the correct range
+                image_handle_id,
                 vertices,
             });
-            index += len;
         }
 
+        let mut index = 0;
         for mut transparent_phase in views.iter_mut() {
-            for tmp_batch in &batches {
-                let batch = &tmp_batch.batch;
-                if !gpu_images.contains_key(&Handle::weak(batch.image_handle_id)) {
+            for group in &grouped_vertices {
+                if !gpu_images.contains_key(&Handle::weak(group.image_handle_id)) {
                     // Skip this item if the texture is not ready
                     continue;
                 }
-                let entity = commands.spawn_bundle((batch.clone(),)).id();
-                for vertex in tmp_batch.vertices.clone() {
+                let len = group.vertices.len() as u32;
+                let entity = commands
+                    .spawn_bundle((ParticleBatch {
+                        image_handle_id: group.image_handle_id.clone(),
+                        range: (index..(index + len)),
+                    },))
+                    .id();
+                index += len;
+                for vertex in group.vertices.clone() {
                     transparent_phase.add(Transparent3d {
                         distance: vertex.position[2], // TODO: distance to camera
                         draw_function: draw_particle_function,

@@ -21,10 +21,15 @@ impl RenderCommand<Transparent3d> for DrawParticleBatch {
         (particle_meta, query_batch): SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,
     ) -> RenderCommandResult {
+        // We retrieve the `ParticleBatch` component from the `Transparent3d::entity`
         let batch = query_batch.get(item.entity).unwrap();
         let particle_meta = particle_meta.into_inner();
+        // We pass the entire vertex buffer to the render pass? TODO: This seems wrong
         pass.set_vertex_buffer(0, particle_meta.vertices.buffer().unwrap().slice(..));
+        // We draw only the vertices contained in the batch range
         pass.draw(batch.range.clone(), 0..1);
         RenderCommandResult::Success
+
+        // TODO: Where do I retrieve the Texture ?
     }
 }
