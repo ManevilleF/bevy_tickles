@@ -1,28 +1,57 @@
-use crate::render::queue::{ParticleBatch, ParticleMeta};
-use crate::Transparent3d;
+use crate::render::{ParticleBatch, ParticleMeta};
+use crate::ParticleImageBindGroups;
 use bevy::ecs::system::{
     lifetimeless::{Read, SQuery, SRes},
     SystemParamItem,
 };
 use bevy::prelude::*;
 use bevy::render::render_phase::{
-    RenderCommand, RenderCommandResult, SetItemPipeline, TrackedRenderPass,
+    EntityRenderCommand, RenderCommandResult, SetItemPipeline, TrackedRenderPass,
 };
 
-pub type DrawParticle = (SetItemPipeline, DrawParticleBatch);
+pub type DrawParticle = (
+    SetItemPipeline,
+    SetParticleTextureBindGroup<1>,
+    DrawParticleBatch,
+);
+
+pub struct SetParticleTextureBindGroup<const I: usize>;
+impl<const I: usize> EntityRenderCommand for SetParticleTextureBindGroup<I> {
+    type Param = (SRes<ParticleImageBindGroups>, SQuery<Read<ParticleBatch>>);
+
+    fn render<'w>(
+        _view: Entity,
+        item: Entity,
+        (image_bind_groups, query_batch): SystemParamItem<'w, '_, Self::Param>,
+        pass: &mut TrackedRenderPass<'w>,
+    ) -> RenderCommandResult {
+        let batch = query_batch.get(item).unwrap();
+        let image_bind_groups = image_bind_groups.into_inner();
+
+        pass.set_bind_group(
+            I,
+            image_bind_groups
+                .values
+                .get(&Handle::weak(batch.image_handle_id))
+                .unwrap(),
+            &[],
+        );
+        RenderCommandResult::Success
+    }
+}
 
 pub struct DrawParticleBatch;
-impl RenderCommand<Transparent3d> for DrawParticleBatch {
+impl EntityRenderCommand for DrawParticleBatch {
     type Param = (SRes<ParticleMeta>, SQuery<Read<ParticleBatch>>);
 
     fn render<'w>(
         _view: Entity,
-        item: &Transparent3d,
+        item: Entity,
         (particle_meta, query_batch): SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,
     ) -> RenderCommandResult {
-        // We retrieve the `ParticleBatch` component from the `Transparent3d::entity`
-        let batch = query_batch.get(item.entity).unwrap();
+        // We retrieve the `ParticleBatch` component from the item entity
+        let batch = query_batch.get(item).unwrap();
         let particle_meta = particle_meta.into_inner();
         // We pass the entire vertex buffer to the render pass? TODO: This seems wrong
         pass.set_vertex_buffer(0, particle_meta.vertices.buffer().unwrap().slice(..));

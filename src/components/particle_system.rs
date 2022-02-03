@@ -94,11 +94,4 @@ impl ParticleSystem {
             self.particles.extend(particles);
         }
     }
-
-    #[inline]
-    #[must_use]
-    /// Iterator on every particle position
-    pub(crate) fn particle_translations(&self) -> Vec<Vec3> {
-        self.particles.iter().map(|p| p.translation).collect()
-    }
 }

@@ -11,7 +11,7 @@ pub const PARTICLE_SHADER_HANDLE: HandleUntyped =
 
 pub struct ParticlePipeline {
     pub(crate) view_layout: BindGroupLayout,
-    pub(crate) material_layout: BindGroupLayout,
+    pub(crate) image_layout: BindGroupLayout,
 }
 
 impl SpecializedPipeline for ParticlePipeline {
@@ -58,7 +58,7 @@ impl SpecializedPipeline for ParticlePipeline {
                     write_mask: ColorWrites::ALL,
                 }],
             }),
-            layout: Some(vec![self.view_layout.clone(), self.material_layout.clone()]),
+            layout: Some(vec![self.view_layout.clone(), self.image_layout.clone()]),
             primitive: PrimitiveState {
                 front_face: FrontFace::Ccw,
                 cull_mode: None,
@@ -112,7 +112,7 @@ impl FromWorld for ParticlePipeline {
             label: Some("particle_view_layout"),
         });
 
-        let material_layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
+        let image_layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
             entries: &[
                 BindGroupLayoutEntry {
                     binding: 0,
@@ -131,11 +131,11 @@ impl FromWorld for ParticlePipeline {
                     count: None,
                 },
             ],
-            label: Some("particle_material_layout"),
+            label: Some("particle_image_layout"),
         });
         Self {
             view_layout,
-            material_layout,
+            image_layout,
         }
     }
 }

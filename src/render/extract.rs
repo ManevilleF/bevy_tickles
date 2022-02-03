@@ -1,30 +1,8 @@
 #![allow(clippy::needless_pass_by_value)]
+use crate::render::{ExtractedParticle, ExtractedParticles};
 use crate::{ParticleMaterial, ParticleRng, ParticleSystem};
-use bevy::asset::HandleId;
 use bevy::prelude::*;
 use bevy::render::RenderWorld;
-use bevy::sprite::Rect;
-
-#[derive(Component, Clone, Copy)]
-pub struct ExtractedParticle {
-    /// Texture handle id
-    pub image_handle_id: HandleId,
-    /// World space position
-    pub position: Vec3,
-    /// rotation
-    pub rotation: f32,
-    /// color tint
-    pub color: Color,
-    /// Select an area of the texture
-    pub rect: Option<Rect>,
-    /// Size of the sprite
-    pub size: Vec2,
-}
-
-#[derive(Default)]
-pub struct ExtractedParticles {
-    pub particles: Vec<ExtractedParticle>,
-}
 
 pub fn extract_particles(
     mut render_world: ResMut<RenderWorld>,

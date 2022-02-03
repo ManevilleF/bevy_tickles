@@ -1,196 +1,95 @@
 use crate::render::draw::DrawParticle;
 use crate::render::pipeline::ParticlePipeline;
-use crate::ExtractedParticles;
-use bevy::asset::HandleId;
+use crate::render::{ParticleBatch, ParticleImageBindGroups, ParticleMeta};
 use bevy::core_pipeline::Transparent3d;
-use bevy::math::const_vec2;
 use bevy::prelude::*;
+use bevy::render::render_resource::BindingResource;
 use bevy::render::{
     render_asset::RenderAssets,
     render_phase::{DrawFunctions, RenderPhase},
     render_resource::{
-        BindGroup, BindGroupDescriptor, BindGroupEntry, BufferUsages, BufferVec,
-        RenderPipelineCache, SpecializedPipelines,
+        BindGroupDescriptor, BindGroupEntry, RenderPipelineCache, SpecializedPipelines,
     },
-    renderer::{RenderDevice, RenderQueue},
+    renderer::RenderDevice,
     view::ViewUniforms,
 };
-use bytemuck::{Pod, Zeroable};
-use itertools::Itertools;
-use std::cmp::Ordering;
-use std::ops::Range;
-
-/// Single particle vertex representation
-#[repr(C)]
-#[derive(Copy, Clone, Pod, Zeroable)]
-pub struct ParticleVertex {
-    /// Vertex position
-    pub position: [f32; 3],
-    /// UV Coordinates (texturing)
-    pub uv: [f32; 2],
-    /// Vertex color
-    pub color: u32,
-}
-
-pub struct ParticleMeta {
-    /// Every particle vertex information
-    pub vertices: BufferVec<ParticleVertex>,
-    /// Bind group corresponding to the pipeline `view_layout` bind group layout
-    pub view_bind_group: Option<BindGroup>,
-}
-
-/// Particle batch by texture handle
-#[derive(Component, Clone)]
-pub struct ParticleBatch {
-    /// Texture handle
-    pub image_handle_id: HandleId,
-    /// Vertex buffer index range matching the texture id
-    pub range: Range<u32>,
-}
-
-struct GroupedVertices {
-    image_handle_id: HandleId,
-    vertices: Vec<ParticleVertex>,
-}
-
-impl Default for ParticleMeta {
-    fn default() -> Self {
-        Self {
-            vertices: BufferVec::new(BufferUsages::VERTEX),
-            view_bind_group: None,
-        }
-    }
-}
-
-/// Vertex indices for quad (2 triangles)
-const QUAD_INDICES: [usize; 6] = [0, 2, 3, 0, 1, 2];
-
-/// Relative vertex positions for quads
-const QUAD_VERTEX_POSITIONS: [Vec2; 4] = [
-    const_vec2!([-0.5, -0.5]),
-    const_vec2!([0.5, -0.5]),
-    const_vec2!([0.5, 0.5]),
-    const_vec2!([-0.5, 0.5]),
-];
-
-/// UV coordinates for quads
-const QUAD_UVS: [Vec2; 4] = [
-    const_vec2!([0., 1.]),
-    const_vec2!([1., 1.]),
-    const_vec2!([1., 0.]),
-    const_vec2!([0., 0.]),
-];
+use bevy::sprite::SpriteAssetEvents;
 
 pub fn queue_particles(
-    mut commands: Commands,
     draw_functions: Res<DrawFunctions<Transparent3d>>,
     render_device: Res<RenderDevice>,
-    render_queue: Res<RenderQueue>,
-    mut particle_meta: ResMut<ParticleMeta>,
     view_uniforms: Res<ViewUniforms>,
     particle_pipeline: Res<ParticlePipeline>,
     mut pipelines: ResMut<SpecializedPipelines<ParticlePipeline>>,
     mut pipeline_cache: ResMut<RenderPipelineCache>,
+    mut particle_meta: ResMut<ParticleMeta>,
     gpu_images: Res<RenderAssets<Image>>,
-    mut extracted_particles: ResMut<ExtractedParticles>,
+    batch_query: Query<(Entity, &ParticleBatch)>,
+    mut image_bind_groups: ResMut<ParticleImageBindGroups>,
     mut views: Query<&mut RenderPhase<Transparent3d>>,
+    events: Res<SpriteAssetEvents>,
 ) {
-    if let Some(view_binding) = view_uniforms.uniforms.binding() {
-        let meta = &mut particle_meta;
+    // If an image has changed, the GpuImage has (probably) changed
+    for event in &events.images {
+        match event {
+            AssetEvent::Created { .. } => None,
+            AssetEvent::Modified { handle } => image_bind_groups.values.remove(handle),
+            AssetEvent::Removed { handle } => image_bind_groups.values.remove(handle),
+        };
+    }
 
-        // Clear the vertex buffers
-        meta.vertices.clear();
+    if let Some(view_binding) = view_uniforms.uniforms.binding() {
         // Define the view bind group
-        meta.view_bind_group = Some(render_device.create_bind_group(&BindGroupDescriptor {
-            entries: &[BindGroupEntry {
-                binding: 0,
-                resource: view_binding,
-            }],
-            label: Some("particle_view_bind_group"),
-            layout: &particle_pipeline.view_layout,
-        }));
+        particle_meta.view_bind_group =
+            Some(render_device.create_bind_group(&BindGroupDescriptor {
+                entries: &[BindGroupEntry {
+                    binding: 0,
+                    resource: view_binding,
+                }],
+                label: Some("particle_view_bind_group"),
+                layout: &particle_pipeline.view_layout,
+            }));
         // Retrieve the particle drawing function
         let draw_particle_function = draw_functions.read().get_id::<DrawParticle>().unwrap();
         // Cache the specialized pipeline
         let pipeline = pipelines.specialize(&mut pipeline_cache, &particle_pipeline, ());
 
-        // We retrieve the extracted particles
-        let extracted_particles = &mut extracted_particles.particles;
-        // Sort particles by z for correct transparency and then by handle to improve batching
-        extracted_particles.sort_unstable_by(|a, b| {
-            match a.position.z.partial_cmp(&b.position.z) {
-                Some(Ordering::Equal) | None => a.image_handle_id.cmp(&b.image_handle_id),
-                Some(other) => other,
-            }
-        });
-        let mut grouped_vertices = vec![];
-        // We group every consecutive particle with equal `image_handle_id` and create batches
-        for (image_handle_id, group) in &extracted_particles.iter().group_by(|p| p.image_handle_id)
-        {
-            // We compute the vertices for each group
-            let vertices: Vec<ParticleVertex> = group
-                .flat_map(|particle| {
-                    let mut uvs = QUAD_UVS;
-                    // If a rect is specified, adjust UVs and the size of the quad
-                    if let Some(rect) = particle.rect {
-                        let rect_size = rect.size();
-                        for uv in &mut uvs {
-                            *uv = (rect.min + *uv * rect_size) / particle.size;
-                        }
-                    }
-                    // encode color as a single u32 to save space
-                    let color = particle.color.as_linear_rgba_f32();
-                    let color = (color[0] * 255.0) as u32
-                        | ((color[1] * 255.0) as u32) << 8
-                        | ((color[2] * 255.0) as u32) << 16
-                        | ((color[3] * 255.0) as u32) << 24;
-                    let positions = QUAD_VERTEX_POSITIONS
-                        .map(|quad_pos| (particle.position + quad_pos.extend(0.)).into());
-                    QUAD_INDICES
-                        .iter()
-                        .map(|i| ParticleVertex {
-                            position: positions[*i],
-                            uv: uvs[*i].into(),
-                            color,
-                        })
-                        .collect::<Vec<ParticleVertex>>()
-                })
-                .collect();
-            grouped_vertices.push(GroupedVertices {
-                // The batch component with the correct range
-                image_handle_id,
-                vertices,
-            });
-        }
-
-        let mut index = 0;
         for mut transparent_phase in views.iter_mut() {
-            for group in &grouped_vertices {
-                if !gpu_images.contains_key(&Handle::weak(group.image_handle_id)) {
+            for (entity, batch) in batch_query.iter() {
+                if let Some(gpu_image) = gpu_images.get(&Handle::weak(batch.image_handle_id)) {
+                    image_bind_groups
+                        .values
+                        .entry(Handle::weak(batch.image_handle_id))
+                        .or_insert_with(|| {
+                            render_device.create_bind_group(&BindGroupDescriptor {
+                                entries: &[
+                                    BindGroupEntry {
+                                        binding: 0,
+                                        resource: BindingResource::TextureView(
+                                            &gpu_image.texture_view,
+                                        ),
+                                    },
+                                    BindGroupEntry {
+                                        binding: 1,
+                                        resource: BindingResource::Sampler(&gpu_image.sampler),
+                                    },
+                                ],
+                                label: Some("particle_image_bind_group"),
+                                layout: &particle_pipeline.image_layout,
+                            })
+                        });
+                } else {
                     // Skip this item if the texture is not ready
                     continue;
                 }
-                let len = group.vertices.len() as u32;
-                let entity = commands
-                    .spawn_bundle((ParticleBatch {
-                        image_handle_id: group.image_handle_id.clone(),
-                        range: (index..(index + len)),
-                    },))
-                    .id();
-                index += len;
-                for vertex in group.vertices.clone() {
-                    transparent_phase.add(Transparent3d {
-                        distance: vertex.position[2], // TODO: distance to camera
-                        draw_function: draw_particle_function,
-                        pipeline,
-                        entity,
-                    });
-                    particle_meta.vertices.push(vertex);
-                }
+
+                transparent_phase.add(Transparent3d {
+                    distance: 10., // TODO: distance to camera
+                    draw_function: draw_particle_function,
+                    pipeline,
+                    entity,
+                });
             }
         }
-        particle_meta
-            .vertices
-            .write_buffer(&render_device, &render_queue);
     }
 }

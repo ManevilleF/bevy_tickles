@@ -33,9 +33,8 @@ pub use utilities::*;
 
 use crate::modifiers::*;
 use crate::render::draw::DrawParticle;
-use crate::render::extract::ExtractedParticles;
 use crate::render::pipeline::{ParticlePipeline, PARTICLE_SHADER_HANDLE};
-use crate::render::queue::ParticleMeta;
+use crate::render::{ExtractedParticles, ParticleImageBindGroups, ParticleMeta};
 use bevy::log;
 use bevy::prelude::*;
 use bevy::render::{
@@ -53,6 +52,8 @@ pub struct ParticlesPlugin;
 pub enum ParticleLabel {
     /// Extraction system
     ExtractParticles,
+    /// Prepare system
+    PrepareParticles,
     /// Queue system
     QueueParticles,
 }
@@ -84,7 +85,7 @@ impl Plugin for ParticlesPlugin {
         shaders.set_untracked(PARTICLE_SHADER_HANDLE, particle_shader);
         if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
             render_app
-                // .init_resource::<ImageBindGroups>()
+                .init_resource::<ParticleImageBindGroups>()
                 .init_resource::<ParticlePipeline>()
                 .init_resource::<SpecializedPipelines<ParticlePipeline>>()
                 .init_resource::<ParticleMeta>()
@@ -93,6 +94,10 @@ impl Plugin for ParticlesPlugin {
                 .add_system_to_stage(
                     RenderStage::Extract,
                     render::extract::extract_particles.label(ParticleLabel::ExtractParticles),
+                )
+                .add_system_to_stage(
+                    RenderStage::Prepare,
+                    render::prepare::prepare_particles.label(ParticleLabel::PrepareParticles),
                 )
                 .add_system_to_stage(
                     RenderStage::Queue,
