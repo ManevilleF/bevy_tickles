@@ -8,12 +8,34 @@ use bevy::prelude::*;
 use bevy::render::render_phase::{
     EntityRenderCommand, RenderCommandResult, SetItemPipeline, TrackedRenderPass,
 };
+use bevy::render::view::ViewUniformOffset;
 
 pub type DrawParticle = (
     SetItemPipeline,
+    SetParticleViewBindGroup<0>,
     SetParticleTextureBindGroup<1>,
     DrawParticleBatch,
 );
+
+pub struct SetParticleViewBindGroup<const I: usize>;
+impl<const I: usize> EntityRenderCommand for SetParticleViewBindGroup<I> {
+    type Param = (SRes<ParticleMeta>, SQuery<Read<ViewUniformOffset>>);
+
+    fn render<'w>(
+        view: Entity,
+        _item: Entity,
+        (meta, view_query): SystemParamItem<'w, '_, Self::Param>,
+        pass: &mut TrackedRenderPass<'w>,
+    ) -> RenderCommandResult {
+        let view_uniform = view_query.get(view).unwrap();
+        pass.set_bind_group(
+            I,
+            meta.into_inner().view_bind_group.as_ref().unwrap(),
+            &[view_uniform.offset],
+        );
+        RenderCommandResult::Success
+    }
+}
 
 pub struct SetParticleTextureBindGroup<const I: usize>;
 impl<const I: usize> EntityRenderCommand for SetParticleTextureBindGroup<I> {
