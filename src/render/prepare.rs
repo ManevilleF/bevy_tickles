@@ -1,5 +1,5 @@
 use crate::render::{ExtractedParticles, ParticleBatch, ParticleMeta, ParticleVertex};
-use bevy::math::const_vec2;
+use bevy::math::{const_vec2, Vec3Swizzles};
 use bevy::prelude::*;
 use bevy::render::renderer::{RenderDevice, RenderQueue};
 use itertools::Itertools;
@@ -59,8 +59,15 @@ pub fn prepare_particles(
                     | ((color[1] * 255.0) as u32) << 8
                     | ((color[2] * 255.0) as u32) << 16
                     | ((color[3] * 255.0) as u32) << 24;
-                let positions = QUAD_VERTEX_POSITIONS
-                    .map(|quad_pos| (particle.position + quad_pos.extend(0.)).into());
+                let theta = particle.rotation / 360.0;
+                let (cos, sin) = (theta.cos(), theta.sin());
+                let positions = QUAD_VERTEX_POSITIONS.map(|quad_pos| {
+                    let quad_pos = Vec2::new(
+                        quad_pos.x * cos - quad_pos.y * sin,
+                        quad_pos.x * cos + quad_pos.y * sin,
+                    ) * particle.size;
+                    (particle.position.xzy() + quad_pos.extend(0.)).into()
+                });
                 QUAD_INDICES
                     .iter()
                     .map(|i| ParticleVertex {

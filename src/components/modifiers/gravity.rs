@@ -14,7 +14,7 @@ impl Default for ParticleGravity {
 
 impl ParticleModifier for ParticleGravity {
     #[inline]
-    fn apply(&self, particle: &mut Particle, _delta_time: f32) {
-        particle.velocity += self.0; // TODO: test this
+    fn apply(&self, particle: &mut Particle, delta_time: f32) {
+        particle.velocity += self.0 * delta_time;
     }
 }
