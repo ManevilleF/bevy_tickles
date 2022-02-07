@@ -2,6 +2,7 @@
 use crate::modifiers::ParticleSystemModifier;
 use crate::{ParticleEmitter, ParticleModifier, ParticleParams, ParticleRng, ParticleSystem};
 use bevy::prelude::*;
+use bevy::render::primitives::Aabb;
 
 pub fn update_particle_system(mut query: Query<&mut ParticleSystem>, time: Res<Time>) {
     let delta = time.delta_seconds();
@@ -49,6 +50,14 @@ where
     for (mut particle_system, modifier) in query.iter_mut() {
         for particle in &mut particle_system.particles {
             modifier.apply(particle, delta);
+        }
+    }
+}
+
+pub fn compute_particles_aabb(mut query: Query<(&mut Aabb, &ParticleSystem)>) {
+    for (mut aabb, particles) in query.iter_mut() {
+        if let Some(bounding_box) = particles.compute_aabb() {
+            *aabb = bounding_box;
         }
     }
 }

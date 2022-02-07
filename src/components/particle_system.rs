@@ -36,26 +36,29 @@ impl ParticleSystem {
 
     /// Computes the complete bounding box of the particle system
     #[must_use]
-    pub fn compute_aabb(&self) -> Aabb {
+    pub fn compute_aabb(&self) -> Option<Aabb> {
+        if self.particles.is_empty() {
+            return None;
+        }
         let (x_min, x_max) = match self.iter().map(|p| p.translation.x).minmax() {
-            MinMaxResult::NoElements => return Aabb::default(),
+            MinMaxResult::NoElements => return None,
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
         let (y_min, y_max) = match self.iter().map(|p| p.translation.y).minmax() {
-            MinMaxResult::NoElements => return Aabb::default(),
+            MinMaxResult::NoElements => return None,
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
         let (z_min, z_max) = match self.iter().map(|p| p.translation.z).minmax() {
-            MinMaxResult::NoElements => return Aabb::default(),
+            MinMaxResult::NoElements => return None,
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
-        Aabb::from_min_max(
+        Some(Aabb::from_min_max(
             Vec3::new(x_min, y_min, z_min),
             Vec3::new(x_max, y_max, z_max),
-        )
+        ))
     }
 
     /// Adds a particle to the system

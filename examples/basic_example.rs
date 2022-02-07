@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_particles::modifiers::*;
-use bevy_particles::*;
+use bevy_particles::prelude::modifiers::*;
+use bevy_particles::prelude::*;
 
 fn main() {
     App::new()

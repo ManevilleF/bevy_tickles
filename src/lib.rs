@@ -19,22 +19,18 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions)]
 
 mod bundle;
-mod components;
+/// Particle system components
+pub mod components;
 mod particle;
 mod render;
 mod systems;
-mod utilities;
+/// Utility structs
+pub mod utilities;
 
-use bevy::core_pipeline::Transparent3d;
-pub use bundle::*;
-pub use components::*;
-pub use particle::Particle;
-pub use utilities::*;
-
-use crate::modifiers::*;
 use crate::render::draw::DrawParticle;
 use crate::render::pipeline::{ParticlePipeline, PARTICLE_SHADER_HANDLE};
 use crate::render::{ExtractedParticles, ParticleImageBindGroups, ParticleMeta};
+use bevy::core_pipeline::Transparent3d;
 use bevy::log;
 use bevy::prelude::*;
 use bevy::render::{
@@ -42,6 +38,18 @@ use bevy::render::{
 };
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::RegisterInspectable;
+
+///
+pub mod prelude {
+    pub use crate::bundle::ParticleSystemBundle;
+    pub use crate::components::*;
+    pub use crate::particle::Particle;
+    pub use crate::utilities::*;
+    pub use crate::ParticlesPlugin;
+}
+
+use crate::modifiers::*;
+use prelude::*;
 
 const PARTICLE_UPDATE: &str = "particle_update";
 const PARTICLE_EMISSION: &str = "particle_emission";
@@ -86,6 +94,7 @@ impl Plugin for ParticlesPlugin {
 
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
+            .add_system(systems::compute_particles_aabb.after(PARTICLE_UPDATE))
             // TODO: merge all systems in one to avoid so many queries
             .add_system(systems::apply_system_modifier::<MaxParticleCount>.after(PARTICLE_EMISSION))
             .add_system(systems::apply_modifier::<MaxParticleSize>.after(PARTICLE_EMISSION))

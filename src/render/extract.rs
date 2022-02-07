@@ -12,7 +12,7 @@ pub fn extract_particles(
         &ParticleSystem,
         &mut ParticleRng,
         &ParticleMaterial,
-        &Visibility,
+        &ComputedVisibility,
     )>,
 ) {
     let mut extracted_particles = render_world

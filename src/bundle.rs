@@ -1,5 +1,6 @@
 use crate::{ParticleEmitter, ParticleMaterial, ParticleParams, ParticleRng, ParticleSystem};
-use bevy::prelude::{Bundle, GlobalTransform, Transform, Visibility};
+use bevy::prelude::{Bundle, ComputedVisibility, GlobalTransform, Transform, Visibility};
+use bevy::render::primitives::Aabb;
 
 /// Particle System bundle
 #[derive(Debug, Clone, Default, Bundle)]
@@ -14,10 +15,14 @@ pub struct ParticleSystemBundle {
     pub particle_rng: ParticleRng,
     /// The entity local translation/rotation/scale
     pub transform: Transform,
-    /// The entity global translation/rotation/scale
+    /// The entity global translation/rotation/scale (computed)
     pub global_transform: GlobalTransform,
     /// The visual for the particles
     pub material: ParticleMaterial,
     /// Particle visibility
     pub visibility: Visibility,
+    /// Particle System bounding box (computed)
+    pub aab: Aabb,
+    /// Particle visibility (computed)
+    pub computed_visibility: ComputedVisibility,
 }
