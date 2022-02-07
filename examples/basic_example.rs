@@ -24,9 +24,12 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             transform: Transform::from_xyz(0., 5., 0.),
             material: ParticleMaterial::Image(asset_server.load("wrench.png")),
             particle_params: ParticleParams {
-                start_rotation: RangeOrFixed::Range {
-                    min: -6.0,
-                    max: 6.0,
+                rotation: RotationMode::FreeRotation {
+                    start_rotation: RangeOrFixed::Range {
+                        min: -6.0,
+                        max: 6.0,
+                    },
+                    start_angular_velocity: Default::default(),
                 },
                 start_size: 0.0.into(),
                 start_speed: 5.0.into(),

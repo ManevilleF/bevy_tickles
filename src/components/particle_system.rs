@@ -27,9 +27,7 @@ impl ParticleSystem {
     // TODO: Benchmark this and try with `retain_mut` equivalent
     pub(crate) fn update(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
-            particle.lifetime -= delta_time;
-            particle.translation += particle.velocity * delta_time;
-            particle.rotation += particle.angular_velocity * delta_time;
+            particle.update(delta_time)
         }
         self.particles.retain(|particle| particle.lifetime > 0.);
     }
@@ -55,10 +53,15 @@ impl ParticleSystem {
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
-        Some(Aabb::from_min_max(
-            Vec3::new(x_min, y_min, z_min),
-            Vec3::new(x_max, y_max, z_max),
-        ))
+        let min = Vec3::new(x_min, y_min, z_min);
+        let max = Vec3::new(x_max, y_max, z_max);
+        // TODO: check if this works before enabling
+        // if self.world_space {
+        //     let matrix = transform.compute_matrix().inverse();
+        //     min = matrix.transform_point3(min);
+        //     max = matrix.transform_point3(max);
+        // }
+        Some(Aabb::from_min_max(min, max))
     }
 
     /// Adds a particle to the system
@@ -70,9 +73,10 @@ impl ParticleSystem {
     /// real particle `translation` in [`ParticleSystem::world_space`] mode
     pub fn push(&mut self, mut particle: Particle, transform: &GlobalTransform) {
         if self.world_space {
-            particle.translation = transform
-                .compute_matrix()
-                .transform_point3(particle.translation);
+            let matrix = transform.compute_matrix();
+            particle.translation = matrix.transform_point3(particle.translation);
+            particle.velocity = transform.rotation * particle.velocity;
+            particle.start_direction = transform.rotation * particle.start_direction;
         }
         self.particles.push(particle);
     }

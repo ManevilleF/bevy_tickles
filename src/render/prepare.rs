@@ -9,12 +9,7 @@ use std::cmp::Ordering;
 const QUAD_INDICES: [usize; 6] = [0, 2, 3, 0, 1, 2];
 
 /// Relative vertex positions for quads
-const QUAD_VERTEX_POSITIONS: [Vec2; 4] = [
-    const_vec2!([-0.5, -0.5]),
-    const_vec2!([0.5, -0.5]),
-    const_vec2!([0.5, 0.5]),
-    const_vec2!([-0.5, 0.5]),
-];
+const QUAD_VERTEX_POSITIONS: [[f32; 2]; 4] = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]];
 
 /// UV coordinates for quads
 const QUAD_UVS: [Vec2; 4] = [
@@ -67,10 +62,10 @@ pub fn prepare_particles(
                     | ((color[1] * 255.0) as u32) << 8
                     | ((color[2] * 255.0) as u32) << 16
                     | ((color[3] * 255.0) as u32) << 24;
-                let positions = QUAD_VERTEX_POSITIONS.map(|quad_pos| {
+                let positions = QUAD_VERTEX_POSITIONS.map(|[x, y]| {
                     (particle.transform.translation
-                        + particle.transform.right() * quad_pos.x * particle.size.x
-                        + particle.transform.up() * quad_pos.y * particle.size.y)
+                        + particle.transform.right() * x * particle.size.x
+                        + particle.transform.up() * y * particle.size.y)
                         .into()
                 });
                 QUAD_INDICES

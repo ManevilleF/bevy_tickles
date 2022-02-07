@@ -77,6 +77,8 @@ impl Plugin for ParticlesPlugin {
             .register_type::<ParticleRenderMode>();
         #[cfg(feature = "inspector")]
         app.init_resource::<bevy_inspector_egui::InspectableRegistry>()
+            .register_inspectable::<RotationMode>()
+            .register_inspectable::<particle::ParticleRotation>()
             .register_inspectable::<ParticleMaterial>()
             .register_inspectable::<ParticleRenderMode>()
             .register_inspectable::<ParticleEmitter>()

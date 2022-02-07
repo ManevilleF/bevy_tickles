@@ -21,7 +21,7 @@ fn spawn_particle_system(
 ) {
     commands
         .spawn_bundle(PerspectiveCameraBundle {
-            transform: Transform::from_xyz(0.0, 1.0, 0.0),
+            transform: Transform::from_xyz(0.0, 5.0, 20.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..PerspectiveCameraBundle::new_3d()
         })
         .insert(FlyCamera::default());

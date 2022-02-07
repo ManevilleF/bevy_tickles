@@ -111,6 +111,6 @@ impl ParticleRenderMode {
                 }
             },
         };
-        transform.rotation = Quat::from_euler(EulerRot::XYZ, x, y, particle.rotation);
+        transform.rotation = Quat::from_euler(EulerRot::XYZ, x, y, particle.rotation());
     }
 }

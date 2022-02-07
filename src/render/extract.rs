@@ -4,6 +4,7 @@ use crate::{ParticleMaterial, ParticleRenderMode, ParticleRng, ParticleSystem};
 use bevy::prelude::*;
 use bevy::render::RenderWorld;
 
+#[allow(clippy::type_complexity)]
 pub fn extract_particles(
     mut render_world: ResMut<RenderWorld>,
     cameras: Query<

@@ -14,7 +14,7 @@ pub use {
         ParticleMaterial, ParticleTextureSheet, TextureSheetAnimation, TextureSheetLoopingMode,
         TextureSheetMode,
     },
-    particle_params::ParticleParams,
+    particle_params::{ParticleParams, RotationMode},
     particle_render_mode::{BillBoardAlignment, ParticleRenderMode},
     particle_rng::ParticleRng,
     particle_system::ParticleSystem,
