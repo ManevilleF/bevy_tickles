@@ -77,10 +77,12 @@ impl Plugin for ParticlesPlugin {
             .register_type::<ParticleMaterial>()
             .register_type::<ParticleParams>()
             .register_type::<ParticleEmitter>()
-            .register_type::<ParticleSystem>();
+            .register_type::<ParticleSystem>()
+            .register_type::<ParticleRenderMode>();
         #[cfg(feature = "inspector")]
         app.init_resource::<bevy_inspector_egui::InspectableRegistry>()
             .register_inspectable::<ParticleMaterial>()
+            .register_inspectable::<ParticleRenderMode>()
             .register_inspectable::<ParticleEmitter>()
             .register_inspectable::<ColorOverLifeTime>()
             .register_inspectable::<RangeOrFixed<f32>>()

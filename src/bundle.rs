@@ -1,4 +1,7 @@
-use crate::{ParticleEmitter, ParticleMaterial, ParticleParams, ParticleRng, ParticleSystem};
+use crate::{
+    ParticleEmitter, ParticleMaterial, ParticleParams, ParticleRenderMode, ParticleRng,
+    ParticleSystem,
+};
 use bevy::prelude::{Bundle, ComputedVisibility, GlobalTransform, Transform, Visibility};
 use bevy::render::primitives::Aabb;
 
@@ -13,6 +16,8 @@ pub struct ParticleSystemBundle {
     pub particle_params: ParticleParams,
     /// The particle randomizer component
     pub particle_rng: ParticleRng,
+    /// The particle render and alignment component
+    pub particle_render_mode: ParticleRenderMode,
     /// The entity local translation/rotation/scale
     pub transform: Transform,
     /// The entity global translation/rotation/scale (computed)
