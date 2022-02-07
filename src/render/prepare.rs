@@ -34,9 +34,16 @@ pub fn prepare_particles(
 ) {
     let particles = &mut extracted_particles.particles;
     // Sort particles by z for correct transparency and then by handle to improve batching
-    particles.sort_unstable_by(|a, b| match a.position.z.partial_cmp(&b.position.z) {
-        Some(Ordering::Equal) | None => a.image_handle_id.cmp(&b.image_handle_id),
-        Some(other) => other,
+    particles.sort_unstable_by(|a, b| {
+        match a
+            .transform
+            .translation
+            .z
+            .partial_cmp(&b.transform.translation.z)
+        {
+            Some(Ordering::Equal) | None => a.image_handle_id.cmp(&b.image_handle_id),
+            Some(other) => other,
+        }
     });
     // Clear the vertex buffers
     particle_meta.vertices.clear();
@@ -60,14 +67,11 @@ pub fn prepare_particles(
                     | ((color[1] * 255.0) as u32) << 8
                     | ((color[2] * 255.0) as u32) << 16
                     | ((color[3] * 255.0) as u32) << 24;
-                let theta = particle.rotation / 360.0;
-                let (cos, sin) = (theta.cos(), theta.sin());
                 let positions = QUAD_VERTEX_POSITIONS.map(|quad_pos| {
-                    let quad_pos = Vec2::new(
-                        quad_pos.x * cos - quad_pos.y * sin,
-                        quad_pos.x * cos + quad_pos.y * sin,
-                    ) * particle.size;
-                    (particle.position + quad_pos.extend(0.)).into()
+                    (particle.transform.translation
+                        + particle.transform.right() * quad_pos.x * particle.size.x
+                        + particle.transform.up() * quad_pos.y * particle.size.y)
+                        .into()
                 });
                 QUAD_INDICES
                     .iter()

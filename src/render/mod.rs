@@ -1,5 +1,5 @@
 use bevy::asset::HandleId;
-use bevy::prelude::{Color, Component, Handle, Image, Vec2, Vec3};
+use bevy::prelude::{Color, Component, Handle, Image, Transform, Vec2};
 use bevy::render::render_resource::{BindGroup, BufferUsages, BufferVec};
 use bevy::sprite::Rect;
 use bevy::utils::HashMap;
@@ -21,10 +21,8 @@ pub struct ParticleImageBindGroups {
 pub struct ExtractedParticle {
     /// Texture handle id
     pub image_handle_id: HandleId,
-    /// World space position
-    pub position: Vec3,
-    /// rotation
-    pub rotation: f32,
+    /// World space transform
+    pub transform: Transform,
     /// color tint
     pub color: Color,
     /// (Custom area of the texture, the texture size)

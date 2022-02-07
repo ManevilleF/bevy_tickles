@@ -4,10 +4,11 @@
 //!
 //! ## TODO:
 //!
-//! - [ ] Working computed visibility with AAB
+//! - [x] Working computed visibility with AAB
 //! - [ ] Complete modifier list
 //! - [ ] Sub Emitters and callbacks (trails/death)
 //! - [ ] Curves and color gradients
+//! - [ ] Multi camera support
 
 #![forbid(unsafe_code)]
 #![warn(broken_intra_doc_links, clippy::nursery, missing_docs)]

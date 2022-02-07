@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_fly_camera::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_particles::prelude::*;
 
@@ -7,6 +8,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ParticlesPlugin)
         .add_plugin(WorldInspectorPlugin::default())
+        .add_plugin(FlyCameraPlugin)
         .add_startup_system(spawn_particle_system)
         .add_startup_system(spawn_cubes)
         .run();
@@ -17,10 +19,12 @@ fn spawn_particle_system(
     asset_server: Res<AssetServer>,
     mut atlases: ResMut<Assets<TextureAtlas>>,
 ) {
-    commands.spawn_bundle(PerspectiveCameraBundle {
-        transform: Transform::from_xyz(0.0, 0.0, 30.0),
-        ..PerspectiveCameraBundle::new_3d()
-    });
+    commands
+        .spawn_bundle(PerspectiveCameraBundle {
+            transform: Transform::from_xyz(0.0, 1.0, 0.0),
+            ..PerspectiveCameraBundle::new_3d()
+        })
+        .insert(FlyCamera::default());
     commands.spawn_bundle(DirectionalLightBundle::default());
     let smoke_texture = asset_server.load("fireworks.png");
     let texture_atlas = atlases.add(TextureAtlas::from_grid(
@@ -56,8 +60,8 @@ fn spawn_particle_system(
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
-                rate: 100.0,
-                shape: EmitterShape::Sphere { radius: 15.0 },
+                rate: 500.0,
+                shape: EmitterShape::Ball { radius: 10.0 },
                 ..Default::default()
             },
             ..Default::default()

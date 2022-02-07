@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_particles::modifiers::*;
 use bevy_particles::prelude::modifiers::*;
 use bevy_particles::prelude::*;
 
@@ -26,8 +25,8 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             material: ParticleMaterial::Image(asset_server.load("wrench.png")),
             particle_params: ParticleParams {
                 start_rotation: RangeOrFixed::Range {
-                    min: -360.0,
-                    max: 360.0,
+                    min: -6.0,
+                    max: 6.0,
                 },
                 start_size: 0.0.into(),
                 start_velocity: 5.0.into(),
@@ -44,8 +43,9 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             Color::WHITE,
             Color::rgba(0.5, 0.5, 1.0, 0.0),
         ))))
-        .insert(SizeOverTime(1.0))
+        .insert(SizeOverTime(0.5))
         .insert(ParticleGravity(Vec3::new(0., -1.5, 0.)))
+        .insert(AngularVelocityOverTime(1.0))
         .insert(Name::new("Particle System"));
 }
 

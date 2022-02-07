@@ -27,7 +27,9 @@ pub fn extract_particles(
         .get_resource_mut::<ExtractedParticles>()
         .unwrap();
     // TODO: Handle multiple cameras
-    let camera_transform = cameras.single();
+    let camera_transform = cameras
+        .get_single()
+        .expect("Particle systems do not support multiple cameras yet");
     // Clear last frame extracted particles
     extracted_particles.particles.clear();
     for (transform, particles, mut rng, material, render_mode, visibility) in query.iter_mut() {
@@ -50,21 +52,24 @@ pub fn extract_particles(
             }
         };
         let matrix: Mat4 = transform.compute_matrix();
-        let extracted = particles.iter().map(|p| ExtractedParticle {
-            image_handle_id,
-            position: if particles.world_space {
+        let extracted = particles.iter().map(|p| {
+            let mut transform = Transform::from_translation(if particles.world_space {
                 p.translation
             } else {
                 matrix.transform_point3(p.translation)
-            },
-            rotation: p.rotation,
-            color: p.color,
-            rect: if let Some((sheet, atlas)) = anim {
-                Some((sheet.mode.rect(atlas, p, rng.rng()), atlas.size))
-            } else {
-                None
-            },
-            size: Vec2::splat(p.size), // TODO: support stretched particles
+            });
+            render_mode.apply_to_particle(p, &mut transform, camera_transform);
+            ExtractedParticle {
+                image_handle_id,
+                transform,
+                color: p.color,
+                rect: if let Some((sheet, atlas)) = anim {
+                    Some((sheet.mode.rect(atlas, p, rng.rng()), atlas.size))
+                } else {
+                    None
+                },
+                size: Vec2::splat(p.size), // TODO: support stretched particles
+            }
         });
         extracted_particles.particles.extend(extracted);
     }
