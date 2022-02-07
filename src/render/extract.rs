@@ -64,7 +64,7 @@ pub fn extract_particles(
                         },
                         rotation: p.rotation,
                         color: p.color,
-                        rect: Some(sheet.mode.rect(atlas, p, rng.rng())),
+                        rect: Some((sheet.mode.rect(atlas, p, rng.rng()), atlas.size)),
                         size: Vec2::splat(p.size), // TODO: support stretched particles
                     })
                     .collect::<Vec<ExtractedParticle>>()

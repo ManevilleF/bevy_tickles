@@ -24,6 +24,7 @@ const QUAD_UVS: [Vec2; 4] = [
     const_vec2!([0., 0.]),
 ];
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn prepare_particles(
     mut commands: Commands,
     mut extracted_particles: ResMut<ExtractedParticles>,
@@ -47,10 +48,10 @@ pub fn prepare_particles(
             .flat_map(|particle| {
                 let mut uvs = QUAD_UVS;
                 // If a rect is specified, adjust UVs and the size of the quad
-                if let Some(rect) = particle.rect {
+                if let Some((rect, size)) = particle.rect {
                     let rect_size = rect.size();
                     for uv in &mut uvs {
-                        *uv = (rect.min + *uv * rect_size) / particle.size;
+                        *uv = (rect.min + *uv * rect_size) / size;
                     }
                 }
                 // encode color as a single u32 to save space

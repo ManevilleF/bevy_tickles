@@ -15,6 +15,7 @@ use bevy::render::{
 };
 use bevy::sprite::SpriteAssetEvents;
 
+#[allow(clippy::needless_pass_by_value, clippy::too_many_arguments)]
 pub fn queue_particles(
     draw_functions: Res<DrawFunctions<Transparent3d>>,
     render_device: Res<RenderDevice>,
@@ -33,8 +34,9 @@ pub fn queue_particles(
     for event in &events.images {
         match event {
             AssetEvent::Created { .. } => None,
-            AssetEvent::Modified { handle } => image_bind_groups.values.remove(handle),
-            AssetEvent::Removed { handle } => image_bind_groups.values.remove(handle),
+            AssetEvent::Modified { handle } | AssetEvent::Removed { handle } => {
+                image_bind_groups.values.remove(handle)
+            }
         };
     }
 
@@ -78,17 +80,13 @@ pub fn queue_particles(
                                 layout: &particle_pipeline.image_layout,
                             })
                         });
-                } else {
-                    // Skip this item if the texture is not ready
-                    continue;
+                    transparent_phase.add(Transparent3d {
+                        distance: 10., // TODO: Try using `batch.range.min`
+                        draw_function: draw_particle_function,
+                        pipeline,
+                        entity,
+                    });
                 }
-
-                transparent_phase.add(Transparent3d {
-                    distance: 10., // TODO: Try using `batch.range.min`
-                    draw_function: draw_particle_function,
-                    pipeline,
-                    entity,
-                });
             }
         }
     }

@@ -38,7 +38,7 @@ impl Default for Particle {
 }
 
 impl Particle {
-    /// Retrieves the current particle speed, computed from the `length` of its `velocity
+    /// Retrieves the current particle speed, computed from the `length` of its `velocity`
     #[must_use]
     #[inline]
     pub fn speed(&self) -> f32 {

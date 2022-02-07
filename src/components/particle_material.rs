@@ -95,6 +95,18 @@ impl Default for ParticleMaterial {
     }
 }
 
+impl From<Handle<Image>> for ParticleMaterial {
+    fn from(handle: Handle<Image>) -> Self {
+        Self::Image(handle)
+    }
+}
+
+impl From<ParticleTextureSheet> for ParticleMaterial {
+    fn from(sheet: ParticleTextureSheet) -> Self {
+        Self::TextureSheet(sheet)
+    }
+}
+
 impl TextureSheetAnimation {
     /// Retrieves the texture cell bounds (`Rect`) of the texture sheet related to the given `particle`
     /// after computing the animation index

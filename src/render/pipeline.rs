@@ -6,6 +6,7 @@ use bevy::render::renderer::RenderDevice;
 use bevy::render::texture::BevyDefault;
 use bevy::render::view::ViewUniform;
 
+#[allow(clippy::unreadable_literal)]
 pub const PARTICLE_SHADER_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 3032357427511835453);
 

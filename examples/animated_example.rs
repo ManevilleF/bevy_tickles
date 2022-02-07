@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_particles::modifiers::*;
 use bevy_particles::*;
 
 fn main() {
@@ -13,38 +12,56 @@ fn main() {
         .run();
 }
 
-fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn spawn_particle_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut atlases: ResMut<Assets<TextureAtlas>>,
+) {
     commands.spawn_bundle(PerspectiveCameraBundle {
-        transform: Transform::from_xyz(10.0, 10.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0.0, 0.0, 30.0),
         ..PerspectiveCameraBundle::new_3d()
     });
     commands.spawn_bundle(DirectionalLightBundle::default());
+    let smoke_texture = asset_server.load("fireworks.png");
+    let texture_atlas = atlases.add(TextureAtlas::from_grid(
+        smoke_texture,
+        Vec2::new(256.0, 256.0),
+        6,
+        5,
+    ));
     commands
         .spawn_bundle(ParticleSystemBundle {
-            transform: Transform::from_xyz(0., 5., 0.),
-            material: ParticleMaterial::Image(asset_server.load("wrench.png")),
+            transform: Transform::from_xyz(0., 0., 0.),
+            material: ParticleTextureSheet {
+                texture_atlas,
+                mode: TextureSheetMode::AnimateOverLifetime(TextureSheetAnimation {
+                    start_index: 0,
+                    looping_mode: TextureSheetLoopingMode::None,
+                    ..Default::default()
+                }),
+            }
+            .into(),
             particle_params: ParticleParams {
-                start_rotation: RangeOrFixed::Range {
-                    min: -360.0,
-                    max: 360.0,
+                start_rotation: RangeOrFixed::Fixed(300.0),
+                start_size: RangeOrFixed::Range {
+                    min: 1.0,
+                    max: 10.0,
                 },
-                start_size: 0.0.into(),
-                start_velocity: 5.0.into(),
+                start_velocity: 0.0.into(),
+                start_lifetime: 1.0.into(),
+                start_color: RangeOrFixed::Range {
+                    min: Color::WHITE,
+                    max: Color::RED,
+                },
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
-                rate: 20.0,
-                shape: EmitterShape::Sphere { radius: 0.2 },
+                rate: 100.0,
+                shape: EmitterShape::Sphere { radius: 15.0 },
                 ..Default::default()
             },
             ..Default::default()
         })
-        .insert(ColorOverLifeTime(ColorGradient::from((
-            Color::WHITE,
-            Color::rgba(0.5, 0.5, 1.0, 0.0),
-        ))))
-        .insert(SizeOverTime(1.0))
-        .insert(ParticleGravity(Vec3::new(0., -1.5, 0.)))
         .insert(Name::new("Particle System"));
 }
 

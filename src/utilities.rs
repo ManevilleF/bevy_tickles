@@ -37,6 +37,7 @@ impl From<(Color, Color)> for ColorGradient {
 
 impl ColorGradient {
     /// Evaluates a color linearly
+    #[must_use]
     pub fn evaluate_linear(&self, delta: f32) -> Color {
         let min = Vec4::from(self.start.as_rgba());
         let max = Vec4::from(self.end.as_rgba());

@@ -8,7 +8,7 @@ pub struct ColorOverLifeTime(pub ColorGradient);
 
 impl ParticleModifier for ColorOverLifeTime {
     fn apply(&self, particle: &mut Particle, _delta_time: f32) {
-        particle.color = self.0.evaluate_linear(particle.alive_time_ratio())
+        particle.color = self.0.evaluate_linear(particle.alive_time_ratio());
     }
 }
 

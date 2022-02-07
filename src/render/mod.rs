@@ -27,8 +27,8 @@ pub struct ExtractedParticle {
     pub rotation: f32,
     /// color tint
     pub color: Color,
-    /// Select an area of the texture
-    pub rect: Option<Rect>,
+    /// (Custom area of the texture, the texture size)
+    pub rect: Option<(Rect, Vec2)>,
     /// Size of the sprite
     pub size: Vec2,
 }
