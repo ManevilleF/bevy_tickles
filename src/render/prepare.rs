@@ -1,5 +1,5 @@
 use crate::render::{ExtractedParticles, ParticleBatch, ParticleMeta, ParticleVertex};
-use bevy::math::{const_vec2, Vec3Swizzles};
+use bevy::math::const_vec2;
 use bevy::prelude::*;
 use bevy::render::renderer::{RenderDevice, RenderQueue};
 use itertools::Itertools;
@@ -66,7 +66,7 @@ pub fn prepare_particles(
                         quad_pos.x * cos - quad_pos.y * sin,
                         quad_pos.x * cos + quad_pos.y * sin,
                     ) * particle.size;
-                    (particle.position.xzy() + quad_pos.extend(0.)).into()
+                    (particle.position + quad_pos.extend(0.)).into()
                 });
                 QUAD_INDICES
                     .iter()

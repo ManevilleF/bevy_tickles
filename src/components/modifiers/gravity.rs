@@ -18,3 +18,9 @@ impl ParticleModifier for ParticleGravity {
         particle.velocity += self.0 * delta_time;
     }
 }
+
+impl From<Vec3> for ParticleGravity {
+    fn from(gravity: Vec3) -> Self {
+        Self(gravity)
+    }
+}

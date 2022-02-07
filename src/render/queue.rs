@@ -84,7 +84,7 @@ pub fn queue_particles(
                 }
 
                 transparent_phase.add(Transparent3d {
-                    distance: 10., // TODO: distance to camera
+                    distance: 10., // TODO: Try using `batch.range.min`
                     draw_function: draw_particle_function,
                     pipeline,
                     entity,

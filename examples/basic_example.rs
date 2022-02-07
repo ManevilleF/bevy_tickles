@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_particles::{ExhaustiveParticleSystemBundle, ParticleMaterial, ParticlesPlugin};
+use bevy_particles::{
+    ColorGradient, EmitterShape, ExhaustiveParticleSystemBundle, ParticleEmitter, ParticleMaterial,
+    ParticleParams, ParticlesPlugin, RangeOrFixed,
+};
 
 fn main() {
     App::new()
@@ -8,20 +11,80 @@ fn main() {
         .add_plugin(ParticlesPlugin)
         .add_plugin(WorldInspectorPlugin::default())
         .add_startup_system(spawn_particle_system)
+        .add_startup_system(spawn_cubes)
         .run();
 }
 
 fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(PerspectiveCameraBundle {
-        transform: Transform::from_xyz(10.0, 0.0, 10.0).looking_at(Vec3::ZERO, Vec3::Z),
+        transform: Transform::from_xyz(10.0, 10.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..PerspectiveCameraBundle::new_3d()
     });
     commands.spawn_bundle(DirectionalLightBundle::default());
     commands
         .spawn_bundle(ExhaustiveParticleSystemBundle {
+            transform: Transform::from_xyz(0., 5., 0.),
             material: ParticleMaterial::Image(asset_server.load("wrench.png")),
+            particle_params: ParticleParams {
+                start_rotation: RangeOrFixed::Range {
+                    min: -360.0,
+                    max: 360.0,
+                },
+                start_size: 0.0.into(),
+                start_velocity: 5.0.into(),
+                ..Default::default()
+            },
+            particle_emitter: ParticleEmitter {
+                rate: 20.0,
+                shape: EmitterShape::Sphere { radius: 0.2 },
+                ..Default::default()
+            },
+            color_over_lifetime: ColorGradient::from((
+                Color::WHITE,
+                Color::rgba(0.5, 0.5, 1.0, 0.0),
+            ))
+            .into(),
+            size_over_time: 1.0.into(),
+            gravity: Vec3::new(0., -1.5, 0.).into(),
             ..Default::default()
         })
         .insert(Name::new("Particle System"));
-    commands.spawn_bundle(PbrBundle::default());
+}
+
+fn spawn_cubes(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    let mesh = meshes.add(shape::Cube::new(1.).into());
+    commands.spawn_bundle(PbrBundle {
+        mesh: mesh.clone(),
+        material: materials.add(Color::WHITE.into()),
+        transform: Transform::from_xyz(0., 0., 0.),
+        ..Default::default()
+    });
+    commands.spawn_bundle(PbrBundle {
+        mesh: mesh.clone(),
+        material: materials.add(Color::RED.into()),
+        transform: Transform::from_xyz(-5., 0., 0.),
+        ..Default::default()
+    });
+    commands.spawn_bundle(PbrBundle {
+        mesh: mesh.clone(),
+        material: materials.add(Color::BLUE.into()),
+        transform: Transform::from_xyz(5., 0., 0.),
+        ..Default::default()
+    });
+    commands.spawn_bundle(PbrBundle {
+        mesh: mesh.clone(),
+        material: materials.add(Color::GREEN.into()),
+        transform: Transform::from_xyz(0., 0., 5.),
+        ..Default::default()
+    });
+    commands.spawn_bundle(PbrBundle {
+        mesh,
+        material: materials.add(Color::YELLOW.into()),
+        transform: Transform::from_xyz(0., 0., -5.),
+        ..Default::default()
+    });
 }

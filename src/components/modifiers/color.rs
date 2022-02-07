@@ -1,4 +1,4 @@
-use crate::{Color, ColorGradient, Particle, ParticleModifier};
+use crate::{ColorGradient, Particle, ParticleModifier};
 use bevy::prelude::{Component, Reflect};
 
 /// Evaluates particle color over its lifetime
@@ -9,5 +9,11 @@ pub struct ColorOverLifeTime(pub ColorGradient);
 impl ParticleModifier for ColorOverLifeTime {
     fn apply(&self, particle: &mut Particle, _delta_time: f32) {
         particle.color = self.0.evaluate_linear(particle.alive_time_ratio())
+    }
+}
+
+impl From<ColorGradient> for ColorOverLifeTime {
+    fn from(gradient: ColorGradient) -> Self {
+        Self(gradient)
     }
 }
