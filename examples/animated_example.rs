@@ -46,12 +46,8 @@ fn spawn_particle_system(
             }
             .into(),
             particle_params: ParticleParams {
-                start_rotation: RangeOrFixed::Fixed(300.0),
-                start_size: RangeOrFixed::Range {
-                    min: 1.0,
-                    max: 10.0,
-                },
-                start_velocity: 0.0.into(),
+                start_size: RangeOrFixed::Range { min: 1.0, max: 4.0 },
+                start_speed: 0.0.into(),
                 start_lifetime: 1.0.into(),
                 start_color: RangeOrFixed::Range {
                     min: Color::WHITE,
@@ -60,8 +56,11 @@ fn spawn_particle_system(
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
-                rate: 500.0,
-                shape: EmitterShape::Ball { radius: 10.0 },
+                rate: 300.0,
+                shape: EmitterShape::Sphere {
+                    radius: 10.0,
+                    edge_only: true,
+                },
                 ..Default::default()
             },
             ..Default::default()

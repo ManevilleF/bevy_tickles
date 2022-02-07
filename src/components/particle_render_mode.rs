@@ -14,8 +14,9 @@ pub enum BillBoardAlignment {
     Local,
     /// Particles face the direct position of the Camera transform
     Facing,
-    /// Particles face in the direction of their velocity.  
-    Velocity,
+    /// Particles face in the direction of their velocity. If the particles don't move, the original
+    /// direction from the emitter is used
+    Direction,
 }
 
 #[derive(Debug, Clone, Component, Reflect)]
@@ -79,8 +80,10 @@ impl ParticleRenderMode {
         let (x, y) = match self {
             ParticleRenderMode::HorizontalBillBoard => (1.5, 0.0),
             ParticleRenderMode::VerticalBillboard => {
-                let (_x, y, _z) =
-                    rotation_forward(-camera_transform.forward()).to_euler(EulerRot::XYZ);
+                let (_x, y, _z) = rotation_forward(
+                    (camera_transform.translation - transform.translation).normalize_or_zero(),
+                )
+                .to_euler(EulerRot::XYZ);
                 (0.0, y)
             }
             ParticleRenderMode::BillBoard { alignment } => match alignment {
@@ -95,13 +98,15 @@ impl ParticleRenderMode {
                     (x, y)
                 }
                 BillBoardAlignment::Facing => {
-                    let (x, y, _z) =
-                        rotation_forward(camera_transform.translation - transform.translation)
-                            .to_euler(EulerRot::XYZ);
+                    let (x, y, _z) = rotation_forward(
+                        (camera_transform.translation - transform.translation).normalize_or_zero(),
+                    )
+                    .to_euler(EulerRot::XYZ);
                     (x, y)
                 }
-                BillBoardAlignment::Velocity => {
-                    let (x, y, _z) = rotation_forward(particle.velocity).to_euler(EulerRot::XYZ);
+                BillBoardAlignment::Direction => {
+                    let (x, y, _z) =
+                        rotation_forward(particle.non_zero_direction()).to_euler(EulerRot::XYZ);
                     (x, y)
                 }
             },

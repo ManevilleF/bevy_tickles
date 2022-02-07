@@ -29,12 +29,15 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                     max: 6.0,
                 },
                 start_size: 0.0.into(),
-                start_velocity: 5.0.into(),
+                start_speed: 5.0.into(),
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
                 rate: 20.0,
-                shape: EmitterShape::Sphere { radius: 0.2 },
+                shape: EmitterShape::Sphere {
+                    radius: 0.2,
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             ..Default::default()

@@ -20,6 +20,7 @@ pub struct Particle {
     pub velocity: Vec3,
     /// Particle 3D angular velocity
     pub angular_velocity: f32,
+    pub(crate) start_direction: Vec3,
 }
 
 impl Default for Particle {
@@ -33,6 +34,7 @@ impl Default for Particle {
             color: Default::default(),
             velocity: Default::default(),
             angular_velocity: 0.0,
+            start_direction: Vec3::Y,
         }
     }
 }
@@ -52,7 +54,7 @@ impl Particle {
         self.start_lifetime - self.lifetime
     }
 
-    /// How long was the particle alive compared to its original lifetime
+    /// How long was the particle alive compared to its original lifetime (between 0 and 1)
     #[must_use]
     #[inline]
     pub fn alive_time_ratio(&self) -> f32 {
@@ -67,6 +69,15 @@ impl Particle {
             translation: matrix.transform_point3(self.translation),
             ..self
         }
+    }
+
+    /// Retrieves either the current direction from `velocity` or uses the initial direction of the particle
+    #[must_use]
+    #[inline]
+    pub fn non_zero_direction(&self) -> Vec3 {
+        self.velocity
+            .try_normalize()
+            .unwrap_or(self.start_direction)
     }
 }
 

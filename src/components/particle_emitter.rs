@@ -21,12 +21,16 @@ pub enum EmitterShape {
     Sphere {
         /// Sphere radius
         radius: f32,
+        /// Emit only on the sphere edges
+        edge_only: bool,
     },
-    /// Initializes particles at randomly-sampled positions on a ball and directs them outwards from the center
-    Ball {
-        /// Ball radius
-        radius: f32,
-    },
+    // TODO: implement half sphere
+    // /// Initializes particles at randomly-sampled positions within a semi sphere and directs them outwards from the center
+    // HalfSphere {
+    //     /// Sphere radius
+    //     radius: f32,
+    // },
+    // /// Initializes particles at randomly-sampled positions on a ball and directs them outwards from the center
     /// Initializes particles at randomly-sampled positions within a circle in the direction of the emitter’s up axis
     Circle {
         /// Circle radius
@@ -78,15 +82,22 @@ pub struct ParticleEmitter {
 
 impl Default for EmitterShape {
     fn default() -> Self {
-        Self::Sphere { radius: 1.0 }
+        Self::Sphere {
+            radius: 1.0,
+            edge_only: false,
+        }
     }
 }
 
 impl EmitterShape {
     pub(crate) fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle {
         match self {
-            EmitterShape::Sphere { radius } => {
-                let range = rng.gen_range(0.0..=*radius);
+            EmitterShape::Sphere { radius, edge_only } => {
+                let range = if *edge_only {
+                    *radius
+                } else {
+                    rng.gen_range(0.0..=*radius)
+                };
                 let theta = PI_2 * rng.gen_range(0.0..=1.0);
                 let phi = PI * rng.gen_range(0.0..=1.0);
                 let sin_phi = phi.sin();
@@ -94,20 +105,6 @@ impl EmitterShape {
                     range * sin_phi * theta.cos(),
                     range * sin_phi * theta.sin(),
                     range * phi.cos(),
-                );
-                EmittedParticle {
-                    position,
-                    direction: position,
-                }
-            }
-            EmitterShape::Ball { radius } => {
-                let theta = PI_2 * rng.gen_range(0.0..=1.0);
-                let phi = PI * rng.gen_range(0.0..=1.0);
-                let sin_phi = phi.sin();
-                let position = Vec3::new(
-                    radius * sin_phi * theta.cos(),
-                    radius * sin_phi * theta.sin(),
-                    radius * phi.cos(),
                 );
                 EmittedParticle {
                     position,

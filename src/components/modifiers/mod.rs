@@ -13,7 +13,7 @@ pub use {
     constraints::{MaxParticleCount, MaxParticleSize, MaxParticleSpeed},
     gravity::ParticleGravity,
     size::{SizeOverSpeed, SizeOverTime},
-    velocity::{AngularVelocityOverTime, VelocityOverTime},
+    velocity::{AngularVelocityOverTime, SpeedOverTime, VelocityOverTime},
 };
 
 /// Common trait for particle system modifiers
