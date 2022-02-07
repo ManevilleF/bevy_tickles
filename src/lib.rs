@@ -10,12 +10,7 @@
 //! - [ ] Curves and color gradients
 
 #![forbid(unsafe_code)]
-#![warn(
-    broken_intra_doc_links,
-    clippy::nursery,
-    clippy::pedantic,
-    missing_docs
-)]
+#![warn(broken_intra_doc_links, clippy::nursery, missing_docs)]
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions)]
 
 mod bundle;

@@ -23,7 +23,7 @@ pub enum BillBoardAlignment {
 /// Defines how the particle image is rendered
 pub enum ParticleRenderMode {
     /// The particles render as billboards and face the direction you specify
-    BillBoard(BillBoardAlignment),
+    BillBoard { alignment: BillBoardAlignment },
     /// The particle is upright on the world Y-axis, but turns to face the Camera.
     VerticalBillboard,
     /// The particle plane is parallel to the XZ “floor” plane.
@@ -38,7 +38,9 @@ impl Default for BillBoardAlignment {
 
 impl Default for ParticleRenderMode {
     fn default() -> Self {
-        Self::BillBoard(BillBoardAlignment::default())
+        Self::BillBoard {
+            alignment: BillBoardAlignment::default(),
+        }
     }
 }
 
@@ -61,6 +63,6 @@ impl ParticleRenderMode {
     #[must_use]
     /// [`Self::Billboard`]
     pub const fn billboard(alignment: BillBoardAlignment) -> Self {
-        Self::BillBoard(alignment)
+        Self::BillBoard { alignment }
     }
 }
