@@ -36,7 +36,7 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                 rate: 20.0,
                 shape: EmitterShape::Sphere {
                     radius: 0.2,
-                    ..Default::default()
+                    edge_only: false,
                 },
                 ..Default::default()
             },

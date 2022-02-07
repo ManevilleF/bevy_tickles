@@ -154,10 +154,12 @@ impl EmitterShape {
                 }
             }
             EmitterShape::Cone { angle } => {
-                let delta = rng.gen_range(0.0..=angle.clamp(0., 1.));
+                let angle = angle.clamp(0., 1.);
+                let delta_x = rng.gen_range(-angle..=angle);
+                let delta_y = rng.gen_range(-angle..=angle);
                 EmittedParticle {
                     position: Vec3::ZERO,
-                    direction: Vec3::new(delta, 1., delta),
+                    direction: Vec3::new(delta_x, 1., delta_y),
                 }
             }
         }
