@@ -11,6 +11,8 @@ Particle systems plugin for [bevy](https://bevyengine.org)
 
 > This is a work in progress with many missing features, it is not suitable for production
 
+<!-- cargo-sync-readme end -->
+
 ## Usage
 
 Add `ParticlesPlugin` to your bevy `App`
@@ -25,16 +27,11 @@ fn main() {
         .add_plugin(ParticlesPlugin)
         .run();
 }
-
-
 ```
 
 You can then use `ParticleSystemBundle` to spawn particle systems.
 
 > Note: The particle modifiers are not included in the bundle, `insert` the modifiers you want to the particle system entity. (See the [example](examples/basic_example.rs))
-
-
-<!-- cargo-sync-readme end -->
 
 ## Features
 
