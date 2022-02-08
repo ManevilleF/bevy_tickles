@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_fly_camera::*;
+use bevy_flycam::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_particles::prelude::shapes::Sphere;
 use bevy_particles::prelude::*;
@@ -9,7 +9,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ParticlesPlugin)
         .add_plugin(WorldInspectorPlugin::default())
-        .add_plugin(FlyCameraPlugin)
+        .add_plugin(NoCameraPlayerPlugin)
         .add_startup_system(spawn_particle_system)
         .add_startup_system(spawn_cubes)
         .run();
@@ -25,7 +25,7 @@ fn spawn_particle_system(
             transform: Transform::from_xyz(0.0, 5.0, 20.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..PerspectiveCameraBundle::new_3d()
         })
-        .insert(FlyCamera::default());
+        .insert(FlyCam);
     commands.spawn_bundle(DirectionalLightBundle::default());
     let smoke_texture = asset_server.load("fireworks.png");
     let texture_atlas = atlases.add(TextureAtlas::from_grid(

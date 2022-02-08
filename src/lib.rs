@@ -5,15 +5,11 @@
 //! [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 //! [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 //!
-//! Particle Systems in bevy
+//! Particle systems plugin for [bevy](https://bevyengine.org)
 //!
-//! ## TODO:
+//! > This is a work in progress with many missing features, it is not suitable for production
 //!
-//! - [x] Working computed visibility with AAB
-//! - [ ] Complete modifier list
-//! - [ ] Sub Emitters and callbacks (trails/death)
-//! - [ ] Curves and color gradients
-//! - [ ] Multi camera support
+//! Contributions welcome !
 
 #![forbid(unsafe_code)]
 #![warn(
