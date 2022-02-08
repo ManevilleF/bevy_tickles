@@ -97,10 +97,12 @@ impl ParticleRngModifier for PerlinNoise {
         particle.try_rotate(x * delta_time * self.rotation_influence);
         particle.size += x * delta_time * self.size_influence;
         match self.velocity_influence {
-            VelocityInfluence::Uniform(influence) => particle.velocity += x * influence,
+            VelocityInfluence::Uniform(influence) => {
+                particle.velocity += x * influence * delta_time;
+            }
             VelocityInfluence::SeparateAxis(influence) => {
                 particle.velocity +=
-                    influence * Vec3::new(x, self.get_value(rng), self.get_value(rng));
+                    influence * Vec3::new(x, self.get_value(rng), self.get_value(rng)) * delta_time;
             }
         }
     }

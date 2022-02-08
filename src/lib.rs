@@ -92,7 +92,8 @@ impl Plugin for ParticlesPlugin {
             .register_type::<ParticleParams>()
             .register_type::<ParticleEmitter>()
             .register_type::<ParticleSystem>()
-            .register_type::<ParticleRenderMode>();
+            .register_type::<ParticleRenderMode>()
+            .register_type::<ColorGradient>();
         #[cfg(feature = "inspector")]
         app.init_resource::<bevy_inspector_egui::InspectableRegistry>()
             .register_inspectable::<RotationMode>()
@@ -103,14 +104,14 @@ impl Plugin for ParticlesPlugin {
             .register_inspectable::<ColorOverLifeTime>()
             .register_inspectable::<RangeOrFixed<f32>>()
             .register_inspectable::<RangeOrFixed<usize>>()
-            .register_inspectable::<RangeOrFixed<Color>>()
             .register_inspectable::<AngularVelocityOverTime>()
             .register_inspectable::<SpeedOverTime>()
             .register_inspectable::<VelocityOverTime>()
             .register_inspectable::<ParticleGravity>()
             .register_inspectable::<SizeOverSpeed>()
             .register_inspectable::<SizeOverSpeed>()
-            .register_inspectable::<PerlinNoise>();
+            .register_inspectable::<PerlinNoise>()
+            .register_inspectable::<ColorOrGradient>();
 
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))

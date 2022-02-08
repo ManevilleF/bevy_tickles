@@ -47,10 +47,13 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             },
             ..Default::default()
         })
-        .insert(ColorOverLifeTime(ColorGradient::from((
-            Color::WHITE,
-            Color::rgba(0.5, 0.5, 1.0, 0.0),
-        ))))
+        .insert(ColorOverLifeTime(
+            ColorGradient::empty()
+                .add_point(0.0, Color::WHITE)
+                .add_point(0.3, Color::GREEN)
+                .add_point(0.6, Color::RED)
+                .add_point(1.0, Color::rgba(0.5, 0.5, 1.0, 0.0)),
+        ))
         .insert(SizeOverTime(0.5))
         .insert(ParticleGravity(Vec3::new(0., -1.5, 0.)))
         .insert(AngularVelocityOverTime(1.0))

@@ -1,7 +1,7 @@
 use crate::particle::{Particle, ParticleRotation};
-use crate::RangeOrFixed;
+use crate::{ColorOrGradient, RangeOrFixed};
 use bevy::ecs::reflect::ReflectComponent;
-use bevy::prelude::{Color, Component, Reflect, Vec3};
+use bevy::prelude::{Component, Reflect, Vec3};
 use rand::Rng;
 
 /// Defines the `z` rotation behaviour of particles
@@ -38,7 +38,7 @@ pub struct ParticleParams {
     /// Start speed for simulated particles
     pub start_speed: RangeOrFixed<f32>,
     /// Start color for simulated particles
-    pub start_color: RangeOrFixed<Color>,
+    pub start_color: ColorOrGradient,
 }
 
 impl ParticleParams {
@@ -73,7 +73,7 @@ impl ParticleParams {
             size: self.start_size.evaluate(rng),
             lifetime,
             start_lifetime: lifetime,
-            color: self.start_color.evaluate(rng),
+            color: self.start_color.evaluate(rng.gen_range(0.0..=1.0)),
             velocity: start_direction * self.start_speed.evaluate(rng),
             start_direction,
         }
@@ -96,7 +96,7 @@ impl Default for ParticleParams {
             start_size: RangeOrFixed::Fixed(1.0),
             rotation: RotationMode::default(),
             start_speed: RangeOrFixed::Fixed(1.0),
-            start_color: RangeOrFixed::Fixed(Color::WHITE),
+            start_color: ColorOrGradient::default(),
         }
     }
 }

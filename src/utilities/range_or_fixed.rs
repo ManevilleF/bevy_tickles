@@ -1,5 +1,4 @@
-use crate::utilities::ColorGradient;
-use bevy::prelude::{Color, Reflect};
+use bevy::prelude::Reflect;
 use rand::Rng;
 use std::fmt::Debug;
 
@@ -43,12 +42,6 @@ impl From<usize> for RangeOrFixed<usize> {
     }
 }
 
-impl Default for RangeOrFixed<Color> {
-    fn default() -> Self {
-        Self::Fixed(Color::default())
-    }
-}
-
 impl RangeOrFixed<f32> {
     /// Evaluates the float value using `rng`
     pub fn evaluate(&self, rng: &mut impl Rng) -> f32 {
@@ -65,20 +58,6 @@ impl RangeOrFixed<usize> {
         match self {
             RangeOrFixed::Fixed(v) => *v,
             RangeOrFixed::Range { min, max } => rng.gen_range(*min..=*max),
-        }
-    }
-}
-
-impl RangeOrFixed<Color> {
-    /// Evaluates the color value using `rng`
-    pub fn evaluate(&self, rng: &mut impl Rng) -> Color {
-        match self {
-            RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range { min, max } => {
-                let delta: f32 = rng.gen_range(0.0..=1.0);
-                let gradient = ColorGradient::from((*min, *max));
-                gradient.evaluate_linear(delta)
-            }
         }
     }
 }

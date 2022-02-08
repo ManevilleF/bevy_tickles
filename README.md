@@ -21,7 +21,8 @@ Contributions welcome !
 - [ ] Curves and gradients implementation
 - [ ] Complete modifier list
 - [ ] Sub Emitters and callbacks (trails/death)
-- [ ] Curves and color gradients
+- [ ] Curves
+- [x] Color gradients
 - [ ] Multi camera support
 - [ ] Lit particles
 - [x] Perlin noise

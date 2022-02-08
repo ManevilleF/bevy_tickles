@@ -50,10 +50,7 @@ fn spawn_particle_system(
                 start_size: RangeOrFixed::Range { min: 1.0, max: 4.0 },
                 start_speed: 0.0.into(),
                 start_lifetime: 1.0.into(),
-                start_color: RangeOrFixed::Range {
-                    min: Color::WHITE,
-                    max: Color::RED,
-                },
+                start_color: ColorGradient::rainbow().into(),
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
