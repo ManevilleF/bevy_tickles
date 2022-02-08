@@ -1,5 +1,5 @@
-use crate::modifiers::ParticleSystemModifier;
-use crate::{Particle, ParticleModifier, ParticleSystem};
+use crate::modifiers::{ParticleModifier, ParticleSystemModifier};
+use crate::{Particle, ParticleSystem};
 use bevy::prelude::{Component, Reflect};
 
 /// Constraints [`ParticleSystem`] particle system count to a max value

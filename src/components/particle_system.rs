@@ -27,7 +27,7 @@ impl ParticleSystem {
     // TODO: Benchmark this and try with `retain_mut` equivalent
     pub(crate) fn update(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
-            particle.update(delta_time)
+            particle.update(delta_time);
         }
         self.particles.retain(|particle| particle.lifetime > 0.);
     }

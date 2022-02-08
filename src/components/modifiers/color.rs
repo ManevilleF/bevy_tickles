@@ -1,4 +1,5 @@
-use crate::{ColorGradient, Particle, ParticleModifier};
+use crate::modifiers::ParticleModifier;
+use crate::{ColorGradient, Particle};
 use bevy::prelude::{Component, Reflect};
 
 /// Evaluates particle color over its lifetime

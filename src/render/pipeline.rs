@@ -1,7 +1,15 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::render::render_resource::std140::AsStd140;
-use bevy::render::render_resource::*;
+use bevy::render::render_resource::{
+    BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType, BlendState,
+    BufferBindingType, BufferSize, ColorTargetState, ColorWrites, CompareFunction, DepthBiasState,
+    DepthStencilState, FragmentState, FrontFace, MultisampleState, PolygonMode, PrimitiveState,
+    PrimitiveTopology, RenderPipelineDescriptor, SamplerBindingType, ShaderStages,
+    SpecializedPipeline, StencilFaceState, StencilState, TextureFormat, TextureSampleType,
+    TextureViewDimension, VertexAttribute, VertexBufferLayout, VertexFormat, VertexState,
+    VertexStepMode,
+};
 use bevy::render::renderer::RenderDevice;
 use bevy::render::texture::BevyDefault;
 use bevy::render::view::ViewUniform;

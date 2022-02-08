@@ -89,7 +89,7 @@ impl ParticleRenderMode {
             ParticleRenderMode::BillBoard { alignment } => match alignment {
                 BillBoardAlignment::View => {
                     let (x, y, _z) =
-                        rotation_forward(-camera_transform.forward()).to_euler(EulerRot::XYZ);
+                        rotation_forward(camera_transform.local_z()).to_euler(EulerRot::XYZ);
                     (x, y)
                 }
                 BillBoardAlignment::World => (0., 0.),

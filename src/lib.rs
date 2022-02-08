@@ -1,5 +1,10 @@
 //! # bevy particles
 //!
+//! [![workflow](https://github.com/ManevilleF/bevy_particles/actions/workflows/rust.yml/badge.svg)](https://github.com/ManevilleF/bevy_particles/actions/workflows/rust.yml)
+//!
+//! [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+//! [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
+//!
 //! Particle Systems in bevy
 //!
 //! ## TODO:
@@ -11,8 +16,21 @@
 //! - [ ] Multi camera support
 
 #![forbid(unsafe_code)]
-#![warn(broken_intra_doc_links, clippy::nursery, missing_docs)]
-#![allow(clippy::default_trait_access, clippy::module_name_repetitions)]
+#![warn(
+    broken_intra_doc_links,
+    clippy::nursery,
+    missing_docs,
+    clippy::pedantic,
+    clippy::cargo
+)]
+#![allow(
+    clippy::default_trait_access,
+    clippy::module_name_repetitions,
+    clippy::cast_sign_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::multiple_crate_versions
+)]
 
 mod bundle;
 /// Particle system components
@@ -44,7 +62,11 @@ pub mod prelude {
     pub use crate::ParticlesPlugin;
 }
 
-use crate::modifiers::*;
+use crate::modifiers::{
+    AngularVelocityOverTime, ColorOverLifeTime, MaxParticleCount, MaxParticleSize,
+    MaxParticleSpeed, ParticleGravity, SizeOverSpeed, SizeOverTime, SpeedOverTime,
+    VelocityOverTime,
+};
 use prelude::*;
 
 const PARTICLE_UPDATE: &str = "particle_update";

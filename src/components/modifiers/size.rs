@@ -1,4 +1,5 @@
-use crate::{Particle, ParticleModifier};
+use crate::modifiers::ParticleModifier;
+use crate::Particle;
 use bevy::prelude::{Component, Reflect};
 
 /// Increases particle size over time

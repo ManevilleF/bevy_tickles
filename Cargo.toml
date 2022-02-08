@@ -29,7 +29,7 @@ default-features = false
 features = ["render"]
 
 [dependencies.bevy-inspector-egui]
-version = "0.7"
+version = "0.8"
 optional = true
 
 [dev-dependencies]

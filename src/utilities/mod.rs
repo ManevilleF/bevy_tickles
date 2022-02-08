@@ -9,6 +9,6 @@ pub use range_or_fixed::*;
 pub(crate) fn rotation_forward(forward: Vec3) -> Quat {
     let forward = forward.normalize();
     let right = Vec3::Y.cross(forward).normalize();
-    let up = forward.cross(right).normalize();
+    let up = forward.cross(right);
     Quat::from_mat3(&Mat3::from_cols(right, up, forward))
 }

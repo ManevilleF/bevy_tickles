@@ -1,6 +1,6 @@
 #![allow(clippy::needless_pass_by_value)]
-use crate::modifiers::ParticleSystemModifier;
-use crate::{ParticleEmitter, ParticleModifier, ParticleParams, ParticleRng, ParticleSystem};
+use crate::modifiers::{ParticleModifier, ParticleSystemModifier};
+use crate::{ParticleEmitter, ParticleParams, ParticleRng, ParticleSystem};
 use bevy::prelude::*;
 use bevy::render::primitives::Aabb;
 
