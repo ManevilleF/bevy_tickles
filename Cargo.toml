@@ -8,7 +8,7 @@ license = "MIT"
 keywords = ["hexagon", "bestagon", "bevy", "geometry"]
 categories = ["game-development", "mathematics"]
 repository = "https://github.com/ManevilleF/bevy_particles"
-exclude = ["assets", "examples"]
+exclude = ["assets", "examples", "docs"]
 
 # Features
 [features]

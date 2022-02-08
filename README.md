@@ -45,9 +45,13 @@ This feature enables [bevy_inspector_egui](https://github.com/jakobhellermann/be
 
 Run with `cargo run --example basic_example --features inspector`
 
+![Alt](./docs/basic_example.gif "basic_example gif")
+
 2. [Animated example](examples/animated_example.rs)
 
 Run with `cargo run --example animated_example --features inspector`
+
+![Alt](./docs/animated_example.gif "animated_example gif")
 
 ## TODO:
 
