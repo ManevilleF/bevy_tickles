@@ -10,10 +10,12 @@ categories = ["game-development", "mathematics"]
 repository = "https://github.com/ManevilleF/bevy_particles"
 exclude = ["assets", "examples"]
 
+# Features
 [features]
 default = []
 inspector = ["bevy-inspector-egui"]
 
+# Deps
 [dependencies]
 itertools = "0.10"
 bytemuck = { version = "1.5", features = ["derive"] }
@@ -32,6 +34,7 @@ features = ["render"]
 version = "0.8"
 optional = true
 
+# Dev Deps
 [dev-dependencies]
 bevy_flycam = "0.6"
 
@@ -39,6 +42,8 @@ bevy_flycam = "0.6"
 version = "0.6"
 default-features = false
 features = ["render", "bevy_winit", "png"]
+
+# Examples
 
 [[example]]
 name = "basic_example"

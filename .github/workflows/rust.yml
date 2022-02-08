@@ -18,6 +18,8 @@ jobs:
         run: cargo build --verbose
       - name: build all features
         run: cargo build --all-features --verbose
+      - name: Install dependencies
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libxcb-xfixes0-dev
       - name: build examples
         run: cargo build --all-features --verbose --examples
 
