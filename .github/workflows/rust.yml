@@ -21,13 +21,6 @@ jobs:
       - name: build examples
         run: cargo build --all-features --verbose --examples
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: test
-        run: cargo test --tests --all-features
-
   fmt:
     runs-on: ubuntu-latest
     steps:
