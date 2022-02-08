@@ -8,10 +8,12 @@ use std::ops::Deref;
 /// Particle System simulation container
 #[derive(Debug, Clone, Default, Component, Reflect)]
 #[reflect(Component)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct ParticleSystem {
     /// If enabled, the particles won't be stuck to the particle system entity
     pub world_space: bool,
     /// Every simulated particle
+    #[cfg_attr(feature = "inspector", inspectable(ignore))]
     pub(crate) particles: Vec<Particle>,
 }
 

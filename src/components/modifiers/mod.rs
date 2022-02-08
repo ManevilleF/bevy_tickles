@@ -1,17 +1,20 @@
 mod color;
 mod constraints;
 mod gravity;
+mod perlin_noise;
 mod size;
 mod velocity;
 
 use crate::ParticleSystem;
 use bevy::prelude::Component;
+use rand::Rng;
 
 use crate::particle::Particle;
 pub use {
     color::ColorOverLifeTime,
     constraints::{MaxParticleCount, MaxParticleSize, MaxParticleSpeed},
     gravity::ParticleGravity,
+    perlin_noise::{NoiseQuality, PerlinNoise},
     size::{SizeOverSpeed, SizeOverTime},
     velocity::{AngularVelocityOverTime, SpeedOverTime, VelocityOverTime},
 };
@@ -26,4 +29,10 @@ pub trait ParticleSystemModifier: Component {
 pub trait ParticleModifier: Component {
     /// Applies modification to the particle
     fn apply(&self, particle: &mut Particle, delta_time: f32);
+}
+
+/// Common trait for particle modifiers needing access to a randomizer
+pub trait ParticleRngModifier: Component {
+    /// Applies modification to the particle
+    fn apply(&self, rng: &mut impl Rng, particle: &mut Particle, delta_time: f32);
 }

@@ -19,6 +19,7 @@ inspector = ["bevy-inspector-egui"]
 [dependencies]
 itertools = "0.10"
 bytemuck = { version = "1.5", features = ["derive"] }
+noise = "0.7"
 
 [dependencies.rand]
 version = "0.8"

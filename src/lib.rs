@@ -60,7 +60,7 @@ pub mod prelude {
 
 use crate::modifiers::{
     AngularVelocityOverTime, ColorOverLifeTime, MaxParticleCount, MaxParticleSize,
-    MaxParticleSpeed, ParticleGravity, SizeOverSpeed, SizeOverTime, SpeedOverTime,
+    MaxParticleSpeed, ParticleGravity, PerlinNoise, SizeOverSpeed, SizeOverTime, SpeedOverTime,
     VelocityOverTime,
 };
 use prelude::*;
@@ -96,8 +96,8 @@ impl Plugin for ParticlesPlugin {
         #[cfg(feature = "inspector")]
         app.init_resource::<bevy_inspector_egui::InspectableRegistry>()
             .register_inspectable::<RotationMode>()
-            .register_inspectable::<particle::ParticleRotation>()
             .register_inspectable::<ParticleMaterial>()
+            .register_inspectable::<ParticleSystem>()
             .register_inspectable::<ParticleRenderMode>()
             .register_inspectable::<ParticleEmitter>()
             .register_inspectable::<ColorOverLifeTime>()
@@ -109,7 +109,8 @@ impl Plugin for ParticlesPlugin {
             .register_inspectable::<VelocityOverTime>()
             .register_inspectable::<ParticleGravity>()
             .register_inspectable::<SizeOverSpeed>()
-            .register_inspectable::<SizeOverTime>();
+            .register_inspectable::<SizeOverSpeed>()
+            .register_inspectable::<PerlinNoise>();
 
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
@@ -124,7 +125,8 @@ impl Plugin for ParticlesPlugin {
             .add_system(systems::apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE));
+            .add_system(systems::apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
 
         let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
         let particle_shader = Shader::from_wgsl(include_str!("render/particles.wgsl"));

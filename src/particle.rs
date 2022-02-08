@@ -2,7 +2,6 @@ use bevy::prelude::{Color, Mat4, Reflect, Vec3};
 use bevy::reflect::FromReflect;
 
 #[derive(Debug, Clone, Reflect)]
-#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub enum ParticleRotation {
     AlignToDirection {
         offset: f32,

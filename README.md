@@ -24,3 +24,8 @@ Contributions welcome !
 - [ ] Curves and color gradients
 - [ ] Multi camera support
 - [ ] Lit particles
+- [x] Perlin noise
+- [ ] examples of classic particle systems:
+  - [ ] Fire
+  - [ ] Explosion
+  - [ ] Sci Fi Shield

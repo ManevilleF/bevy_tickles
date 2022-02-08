@@ -1,5 +1,5 @@
 #![allow(clippy::needless_pass_by_value)]
-use crate::modifiers::{ParticleModifier, ParticleSystemModifier};
+use crate::modifiers::{ParticleModifier, ParticleRngModifier, ParticleSystemModifier};
 use crate::{ParticleEmitter, ParticleParams, ParticleRng, ParticleSystem};
 use bevy::prelude::*;
 use bevy::render::primitives::Aabb;
@@ -50,6 +50,20 @@ where
     for (mut particle_system, modifier) in query.iter_mut() {
         for particle in &mut particle_system.particles {
             modifier.apply(particle, delta);
+        }
+    }
+}
+
+pub fn apply_rng_modifier<M>(
+    mut query: Query<(&mut ParticleSystem, &mut ParticleRng, &M)>,
+    time: Res<Time>,
+) where
+    M: ParticleRngModifier,
+{
+    let delta = time.delta_seconds();
+    for (mut particle_system, mut rng, modifier) in query.iter_mut() {
+        for particle in &mut particle_system.particles {
+            modifier.apply(rng.rng(), particle, delta);
         }
     }
 }
