@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_fly_camera::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_particles::prelude::shapes::Sphere;
 use bevy_particles::prelude::*;
 
 fn main() {
@@ -57,10 +58,11 @@ fn spawn_particle_system(
             },
             particle_emitter: ParticleEmitter {
                 rate: 300.0,
-                shape: EmitterShape::Sphere {
+                shape: Shape::Sphere(Sphere {
                     radius: 10.0,
                     edge_only: true,
-                },
+                    ..Default::default()
+                }),
                 ..Default::default()
             },
             ..Default::default()

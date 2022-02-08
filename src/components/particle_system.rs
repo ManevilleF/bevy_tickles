@@ -75,8 +75,8 @@ impl ParticleSystem {
         if self.world_space {
             let matrix = transform.compute_matrix();
             particle.translation = matrix.transform_point3(particle.translation);
-            particle.velocity = transform.rotation * particle.velocity;
-            particle.start_direction = transform.rotation * particle.start_direction;
+            particle.velocity = matrix.transform_point3(particle.velocity);
+            particle.start_direction = matrix.transform_point3(particle.start_direction);
         }
         self.particles.push(particle);
     }

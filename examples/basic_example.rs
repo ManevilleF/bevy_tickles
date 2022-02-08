@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_particles::prelude::modifiers::*;
+use bevy_particles::prelude::shapes::Sphere;
 use bevy_particles::prelude::*;
 
 fn main() {
@@ -32,15 +33,16 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                     start_angular_velocity: Default::default(),
                 },
                 start_size: 0.0.into(),
-                start_speed: 5.0.into(),
+                start_speed: 2.0.into(),
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
                 rate: 20.0,
-                shape: EmitterShape::Sphere {
+                shape: Shape::Sphere(Sphere {
                     radius: 0.2,
                     edge_only: false,
-                },
+                    ..Default::default()
+                }),
                 ..Default::default()
             },
             ..Default::default()
