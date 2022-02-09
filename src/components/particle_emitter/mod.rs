@@ -15,6 +15,18 @@ pub struct EmittedParticle {
     pub direction: Vec3,
 }
 
+/// Defines the direction of the particles after emission
+#[derive(Debug, Copy, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
+pub enum EmitterDirectionMode {
+    /// default, The direction is taken from the shape
+    Automatic,
+    /// All particles will have a fixed direction
+    Fixed(Vec3),
+    /// All particles will have random directions
+    Randomized,
+}
+
 pub trait EmitterShape: Debug + Clone {
     fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle;
 }
@@ -63,6 +75,8 @@ pub struct ParticleEmitter {
     pub last_emitted_delta_time: f32,
     /// The shape transform
     pub transform: Transform,
+    /// Particle directions after emission
+    pub direction_mode: EmitterDirectionMode,
 }
 
 impl FromReflect for Burst {
@@ -77,6 +91,12 @@ impl Default for EmitterDuration {
     }
 }
 
+impl Default for EmitterDirectionMode {
+    fn default() -> Self {
+        Self::Automatic
+    }
+}
+
 impl Default for ParticleEmitter {
     fn default() -> Self {
         Self {
@@ -87,6 +107,7 @@ impl Default for ParticleEmitter {
             current_delta_time: 0.0,
             last_emitted_delta_time: 0.0,
             transform: Default::default(),
+            direction_mode: Default::default(),
         }
     }
 }
@@ -128,6 +149,21 @@ impl ParticleEmitter {
             .map(|_| {
                 let mut particle = self.shape.emit_particle(rng);
                 particle.position = matrix.transform_point3(particle.position);
+                match self.direction_mode {
+                    EmitterDirectionMode::Automatic => (),
+                    EmitterDirectionMode::Fixed(dir) => {
+                        particle.direction = dir.try_normalize().unwrap_or(Vec3::Y)
+                    }
+                    EmitterDirectionMode::Randomized => {
+                        particle.direction = Vec3::new(
+                            rng.gen_range(-1.0..=1.0),
+                            rng.gen_range(-1.0..=1.0),
+                            rng.gen_range(-1.0..=1.0),
+                        )
+                        .try_normalize()
+                        .unwrap_or(Vec3::Y);
+                    }
+                }
                 particle.direction = matrix.transform_point3(particle.direction.normalize());
                 particle
             })
