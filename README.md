@@ -9,7 +9,7 @@
 
 Particle systems plugin for [bevy](https://bevyengine.org)
 
-> This is a work in progress with many missing features, it is not suitable for production
+> This is a work in progress with many missing features and bugs, it is not suitable for production
 
 <!-- cargo-sync-readme end -->
 
@@ -33,7 +33,35 @@ You can then use `ParticleSystemBundle` to spawn particle systems.
 
 > Note: The particle modifiers are not included in the bundle, `insert` the modifiers you want to the particle system entity. (See the [example](examples/basic_example.rs))
 
-## Features
+### Components
+
+*bevy_tickles* provides two kinds of components:
+- The *Main Components* which are part of the `ParticleSystemBundle`
+- The *modifiers* which are optional effects on the particles or the entire system
+
+#### Built-in modifiers
+
+| name | description |
+|------|-------------|
+|`MaxParticleCount` | Limits the amount of particles (**PERF**) |
+|`MaxParticleSize`  | Limits the size of particles |
+|`MaxParticleSpeed` | Limits the speed of particles|
+|`ParticleGravity`  | Adds a custom gravity force to particles |
+|`SpeedOverTime`  | Changes particle speed over time |
+|`VelocityOverTime` | Changes particle velocity over time |
+|`AngularVelocityOverTime`  | Changes particle angular velocity (`z` rotation) over time |
+|`SizeOverTime` | Changes particle size over time |
+|`SizeOverSpeed`  | Changes particle size over its speed |
+|`RotationOverVelocity` | Rotates particles according to its velocity and direction |
+|`RotationOverTime` | Rotates particles over time |
+|`ColorOverLifeTime`  | Changes color of a partilce over time using a color gradient |
+|`PerlinNoise`  | Uses a perlin noise to change particle velocity/Size/Rotation |
+
+## Common mistakes
+
+- Rotating and scaling the particle system entity's `Transform` is often a bad idea, prefer using the `ParticleEmitter::transform` field.
+
+## Cargo Features
 
 1. `inspector`
 
