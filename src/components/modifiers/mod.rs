@@ -12,7 +12,7 @@ use rand::Rng;
 
 use crate::particle::Particle;
 pub use {
-    color::ColorOverLifeTime,
+    color::{ColorOverLifeTime, ColorOverSpeed},
     constraints::{MaxParticleCount, MaxParticleSize, MaxParticleSpeed},
     gravity::ParticleGravity,
     perlin_noise::{NoiseQuality, PerlinNoise},

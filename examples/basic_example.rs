@@ -40,7 +40,6 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                 rate: 20.0,
                 shape: Shape::Sphere(Sphere {
                     radius: 0.2,
-                    edge_only: false,
                     ..Default::default()
                 }),
                 ..Default::default()

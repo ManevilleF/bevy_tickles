@@ -152,19 +152,18 @@ impl ParticleEmitter {
                 match self.direction_mode {
                     EmitterDirectionMode::Automatic => (),
                     EmitterDirectionMode::Fixed(dir) => {
-                        particle.direction = dir.try_normalize().unwrap_or(Vec3::Y)
+                        particle.direction = dir;
                     }
                     EmitterDirectionMode::Randomized => {
                         particle.direction = Vec3::new(
                             rng.gen_range(-1.0..=1.0),
                             rng.gen_range(-1.0..=1.0),
                             rng.gen_range(-1.0..=1.0),
-                        )
-                        .try_normalize()
-                        .unwrap_or(Vec3::Y);
+                        );
                     }
                 }
-                particle.direction = matrix.transform_point3(particle.direction.normalize());
+                particle.direction =
+                    matrix.transform_point3(particle.direction.try_normalize().unwrap_or(Vec3::Y));
                 particle
             })
             .collect()

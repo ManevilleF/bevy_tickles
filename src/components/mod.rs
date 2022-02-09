@@ -9,7 +9,9 @@ mod particle_rng;
 mod particle_system;
 
 pub use {
-    particle_emitter::{shape_enum::Shape, shapes, Burst, EmitterDuration, ParticleEmitter},
+    particle_emitter::{
+        shape_enum::Shape, shapes, Burst, EmitterDirectionMode, EmitterDuration, ParticleEmitter,
+    },
     particle_material::{
         ParticleMaterial, ParticleTextureSheet, TextureSheetAnimation, TextureSheetLoopingMode,
         TextureSheetMode,

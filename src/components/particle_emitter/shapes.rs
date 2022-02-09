@@ -69,7 +69,7 @@ impl EmitterShape for Sphere {
         );
         EmittedParticle {
             position,
-            direction: position.try_normalize().unwrap_or(Vec3::Y),
+            direction: position,
         }
     }
 }
@@ -82,7 +82,7 @@ impl EmitterShape for Circle {
         let position = Vec3::new(range * theta.cos(), 0., range * theta.sin());
         EmittedParticle {
             position,
-            direction: position.try_normalize().unwrap_or(Vec3::Y),
+            direction: position,
         }
     }
 }

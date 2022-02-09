@@ -54,12 +54,14 @@ You can then use `ParticleSystemBundle` to spawn particle systems.
 |`SizeOverSpeed`  | Changes particle size over its speed |
 |`RotationOverVelocity` | Rotates particles according to its velocity and direction |
 |`RotationOverTime` | Rotates particles over time |
-|`ColorOverLifeTime`  | Changes color of a partilce over time using a color gradient |
+|`ColorOverLifeTime`  | **Sets** color of a particle over time using a color gradient |
+|`ColorOverSpeed`  | **Sets** color of a particle over its using a color gradient |
 |`PerlinNoise`  | Uses a perlin noise to change particle velocity/Size/Rotation |
 
 ## Common mistakes
 
 - Rotating and scaling the particle system entity's `Transform` is often a bad idea, prefer using the `ParticleEmitter::transform` field.
+- Using conflicting modifers like `ColorOverLifetime`/`ColorOverSpeed` or `SizeOverTime/SizeOverSpeed` can lead to unexpected behaviors
 
 ## Cargo Features
 

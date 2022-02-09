@@ -57,7 +57,7 @@ pub mod prelude {
 }
 
 use crate::modifiers::{
-    AngularVelocityOverTime, ColorOverLifeTime, MaxParticleCount, MaxParticleSize,
+    AngularVelocityOverTime, ColorOverLifeTime, ColorOverSpeed, MaxParticleCount, MaxParticleSize,
     MaxParticleSpeed, ParticleGravity, PerlinNoise, RotationOverTime, RotationOverVelocity,
     SizeOverSpeed, SizeOverTime, SpeedOverTime, VelocityOverTime,
 };
@@ -100,6 +100,7 @@ impl Plugin for ParticlesPlugin {
             .register_inspectable::<ParticleRenderMode>()
             .register_inspectable::<ParticleEmitter>()
             .register_inspectable::<ColorOverLifeTime>()
+            .register_inspectable::<ColorOverSpeed>()
             .register_inspectable::<RangeOrFixed<f32>>()
             .register_inspectable::<RangeOrFixed<usize>>()
             .register_inspectable::<AngularVelocityOverTime>()
@@ -129,6 +130,7 @@ impl Plugin for ParticlesPlugin {
             .add_system(systems::apply_modifier::<RotationOverVelocity>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<RotationOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<ColorOverSpeed>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
 
         let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
