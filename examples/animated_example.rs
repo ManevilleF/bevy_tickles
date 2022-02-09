@@ -57,7 +57,7 @@ fn spawn_particle_system(
                 rate: 300.0,
                 shape: Shape::Sphere(Sphere {
                     radius: 10.0,
-                    edge_only: true,
+                    thickness: 0.0,
                     ..Default::default()
                 }),
                 ..Default::default()

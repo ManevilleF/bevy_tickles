@@ -91,7 +91,10 @@ fn spawn_particle_system(
             },
             particle_emitter: ParticleEmitter {
                 rate: 0.0,
-                shape: Shape::Circle(Circle { radius: 1.0 }),
+                shape: Shape::Circle(Circle {
+                    radius: 1.0,
+                    thickness: 0.0,
+                }),
                 bursts: vec![Burst {
                     time: 0.0,
                     count: RangeOrFixed::Fixed(50),
@@ -132,8 +135,8 @@ fn spawn_particle_system(
                 rate: 0.0,
                 shape: Shape::Sphere(Sphere {
                     radius: 2.0,
-                    edge_only: true,
                     hemisphere: true,
+                    thickness: 0.0,
                 }),
                 bursts: vec![Burst {
                     time: 0.0,

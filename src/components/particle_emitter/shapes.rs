@@ -11,8 +11,12 @@ const PI_2: f32 = PI * 2.0;
 pub struct Sphere {
     /// Sphere radius
     pub radius: f32,
-    /// Emit only on the sphere edges
-    pub edge_only: bool,
+    #[cfg_attr(feature = "inspector", inspectable(min = 0.0, max = 1.0))]
+    /// The proportion of the volume that emits particles.
+    /// A value of 0 emits particles from the outer surface of the shape.
+    /// A value of 1 emits particles from the entire volume.
+    /// Values in between will use a proportion of the volume.
+    pub thickness: f32,
     /// Uses a hemisphere instead
     pub hemisphere: bool,
     // TODO: Add uniform algorithm
@@ -42,15 +46,18 @@ pub struct Cone {
 pub struct Circle {
     /// Circle radius
     pub radius: f32,
+    #[cfg_attr(feature = "inspector", inspectable(min = 0.0, max = 1.0))]
+    /// The proportion of the volume that emits particles.
+    /// A value of 0 emits particles from the outer surface of the shape.
+    /// A value of 1 emits particles from the entire volume.
+    /// Values in between will use a proportion of the volume.
+    pub thickness: f32,
 }
 
 impl EmitterShape for Sphere {
     fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle {
-        let range = if self.edge_only {
-            self.radius
-        } else {
-            rng.gen_range(0.0..=self.radius)
-        };
+        let ratio = (1.0 - self.thickness).clamp(0.0, 1.0);
+        let range = rng.gen_range((self.radius * ratio)..=self.radius);
         let theta = PI_2 * rng.gen_range(0.0..=1.0);
         let phi = PI * rng.gen_range(0.0..=1.0);
         let sin_phi = phi.sin();
@@ -69,7 +76,8 @@ impl EmitterShape for Sphere {
 
 impl EmitterShape for Circle {
     fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle {
-        let range = rng.gen_range(0.0..=self.radius);
+        let ratio = (1.0 - self.thickness).clamp(0.0, 1.0);
+        let range = rng.gen_range((self.radius * ratio)..=self.radius);
         let theta = PI_2 * rng.gen_range(0.0..=1.0);
         let position = Vec3::new(range * theta.cos(), 0., range * theta.sin());
         EmittedParticle {
@@ -131,7 +139,7 @@ impl Default for Sphere {
     fn default() -> Self {
         Self {
             radius: 1.0,
-            edge_only: false,
+            thickness: 1.0,
             hemisphere: false,
         }
     }
@@ -145,7 +153,10 @@ impl Default for Cone {
 
 impl Default for Circle {
     fn default() -> Self {
-        Self { radius: 1.0 }
+        Self {
+            radius: 1.0,
+            thickness: 1.0,
+        }
     }
 }
 
