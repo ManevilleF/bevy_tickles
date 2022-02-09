@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_flycam::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_particles::prelude::shapes::Sphere;
-use bevy_particles::prelude::*;
+use bevy_tickles::prelude::shapes::Sphere;
+use bevy_tickles::prelude::*;
 
 fn main() {
     App::new()

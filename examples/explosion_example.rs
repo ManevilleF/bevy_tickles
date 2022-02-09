@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use bevy_flycam::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_particles::components::modifiers::ParticleGravity;
-use bevy_particles::prelude::modifiers::{ColorOverLifeTime, RotationOverVelocity, SizeOverTime};
-use bevy_particles::prelude::shapes::{Circle, Sphere};
-use bevy_particles::prelude::*;
+use bevy_tickles::components::modifiers::ParticleGravity;
+use bevy_tickles::prelude::modifiers::{ColorOverLifeTime, RotationOverVelocity, SizeOverTime};
+use bevy_tickles::prelude::shapes::{Circle, Sphere};
+use bevy_tickles::prelude::*;
 
 fn main() {
     App::new()

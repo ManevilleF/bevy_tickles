@@ -1,6 +1,6 @@
 [package]
-name = "bevy_particles"
-version = "0.1.0"
+name = "bevy_tickles"
+version = "0.0.1"
 edition = "2021"
 authors = ["Felix de Maneville <felix.maneville@gmail.com>"]
 description = "Particle systems for Bevy engine"
