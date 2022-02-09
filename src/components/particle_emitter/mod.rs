@@ -29,11 +29,28 @@ pub struct Burst {
     pub count: RangeOrFixed<usize>,
 }
 
+/// Duration of the particle emitter
+#[derive(Debug, Copy, Clone, Reflect)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
+pub enum EmitterDuration {
+    /// No duration limit
+    Infinite,
+    /// Fixed duration limit
+    FixedDuration {
+        /// Max emission duration
+        duration: f32,
+        /// Does the emitter loop back and restarts?
+        looping: bool,
+    },
+}
+
 /// Emitter of particles, works with [`ParticleSystem`]
 #[derive(Debug, Clone, Component, Reflect)]
 #[reflect(Component)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct ParticleEmitter {
+    /// Emitter duration
+    pub duration: EmitterDuration,
     /// The shape of the emitter
     pub shape: Shape,
     /// The rate of particle emission over time (`1.0` means 1 particle per second)
@@ -54,9 +71,16 @@ impl FromReflect for Burst {
     }
 }
 
+impl Default for EmitterDuration {
+    fn default() -> Self {
+        Self::Infinite
+    }
+}
+
 impl Default for ParticleEmitter {
     fn default() -> Self {
         Self {
+            duration: Default::default(),
             shape: Default::default(),
             rate: 5.0,
             bursts: vec![],
@@ -70,6 +94,16 @@ impl Default for ParticleEmitter {
 impl ParticleEmitter {
     /// Computes particles to emit
     pub fn emit(&mut self, delta_time: f32, rng: &mut impl Rng) -> Vec<EmittedParticle> {
+        // Check duration
+        if let EmitterDuration::FixedDuration { duration, looping } = self.duration {
+            if self.current_delta_time > duration {
+                if looping {
+                    self.current_delta_time = 0.0;
+                    self.last_emitted_delta_time = 0.0;
+                }
+                return vec![];
+            }
+        }
         // bursts
         let mut emission_count = self
             .bursts
@@ -88,6 +122,7 @@ impl ParticleEmitter {
             emission_count += particles_to_emit;
             self.last_emitted_delta_time += delta_per_particle * particles_to_emit as f32;
         }
+
         let matrix = self.transform.compute_matrix();
         (0..emission_count)
             .map(|_| {

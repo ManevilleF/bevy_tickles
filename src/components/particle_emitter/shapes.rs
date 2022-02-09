@@ -33,7 +33,7 @@ pub struct Box {
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Cone {
     /// The cone angle, between `0` and `1` representing between 0 and 90 degrees
-    angle: f32,
+    pub angle: f32,
 }
 
 /// Initializes particles at randomly-sampled positions within a circle in the direction of the emitter’s up axis
@@ -41,7 +41,7 @@ pub struct Cone {
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Circle {
     /// Circle radius
-    radius: f32,
+    pub radius: f32,
 }
 
 impl EmitterShape for Sphere {
@@ -62,7 +62,7 @@ impl EmitterShape for Sphere {
         );
         EmittedParticle {
             position,
-            direction: position,
+            direction: position.try_normalize().unwrap_or(Vec3::Y),
         }
     }
 }
@@ -74,7 +74,7 @@ impl EmitterShape for Circle {
         let position = Vec3::new(range * theta.cos(), 0., range * theta.sin());
         EmittedParticle {
             position,
-            direction: position,
+            direction: position.try_normalize().unwrap_or(Vec3::Y),
         }
     }
 }

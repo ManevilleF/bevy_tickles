@@ -2,6 +2,7 @@ mod color;
 mod constraints;
 mod gravity;
 mod perlin_noise;
+mod rotation;
 mod size;
 mod velocity;
 
@@ -15,6 +16,7 @@ pub use {
     constraints::{MaxParticleCount, MaxParticleSize, MaxParticleSpeed},
     gravity::ParticleGravity,
     perlin_noise::{NoiseQuality, PerlinNoise},
+    rotation::{RotationOverTime, RotationOverVelocity},
     size::{SizeOverSpeed, SizeOverTime},
     velocity::{AngularVelocityOverTime, SpeedOverTime, VelocityOverTime},
 };

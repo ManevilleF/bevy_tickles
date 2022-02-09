@@ -58,8 +58,8 @@ pub mod prelude {
 
 use crate::modifiers::{
     AngularVelocityOverTime, ColorOverLifeTime, MaxParticleCount, MaxParticleSize,
-    MaxParticleSpeed, ParticleGravity, PerlinNoise, SizeOverSpeed, SizeOverTime, SpeedOverTime,
-    VelocityOverTime,
+    MaxParticleSpeed, ParticleGravity, PerlinNoise, RotationOverTime, RotationOverVelocity,
+    SizeOverSpeed, SizeOverTime, SpeedOverTime, VelocityOverTime,
 };
 use prelude::*;
 
@@ -106,8 +106,10 @@ impl Plugin for ParticlesPlugin {
             .register_inspectable::<SpeedOverTime>()
             .register_inspectable::<VelocityOverTime>()
             .register_inspectable::<ParticleGravity>()
+            .register_inspectable::<SizeOverTime>()
             .register_inspectable::<SizeOverSpeed>()
-            .register_inspectable::<SizeOverSpeed>()
+            .register_inspectable::<RotationOverVelocity>()
+            .register_inspectable::<RotationOverTime>()
             .register_inspectable::<PerlinNoise>()
             .register_inspectable::<ColorOrGradient>();
 
@@ -124,6 +126,8 @@ impl Plugin for ParticlesPlugin {
             .add_system(systems::apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<RotationOverVelocity>.after(PARTICLE_UPDATE))
+            .add_system(systems::apply_modifier::<RotationOverTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE))
             .add_system(systems::apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
 

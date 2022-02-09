@@ -53,9 +53,16 @@ Run with `cargo run --example animated_example --features inspector`
 
 ![Alt](./docs/animated_example.gif "animated_example gif")
 
+3. [Explosion example](examples/explosion_example.rs)
+
+Run with `cargo run --example explosion_example --features inspector`
+
+![Alt](./docs/explosion_example.gif "explosion_example gif")
+
 ## TODO:
 
 - [x] computed visibility with AAB
+- [x] Duration/Looping/Infinite particle emission
 - [ ] Curves and gradients implementation
 - [ ] Complete modifier list
 - [ ] Sub Emitters and callbacks (trails/death)
@@ -64,9 +71,10 @@ Run with `cargo run --example animated_example --features inspector`
 - [ ] Multi camera support
 - [ ] Lit particles
 - [x] Perlin noise
+- [ ] Uniform random emission
 - [ ] examples of classic particle systems:
   - [ ] Fire
-  - [ ] Explosion
+  - [x] Explosion
   - [ ] Sci Fi Shield
 
 Contributions welcome !

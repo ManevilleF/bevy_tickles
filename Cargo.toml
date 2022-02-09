@@ -53,3 +53,7 @@ required-features = ["inspector"]
 [[example]]
 name = "animated_example"
 required-features = ["inspector"]
+
+[[example]]
+name = "explosion_example"
+required-features = ["inspector"]

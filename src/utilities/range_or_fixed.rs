@@ -1,6 +1,7 @@
 use bevy::prelude::Reflect;
 use rand::Rng;
 use std::fmt::Debug;
+use std::ops::RangeInclusive;
 
 /// Either a fixed value or a range
 #[derive(Copy, Clone, Debug, Reflect)]
@@ -30,6 +31,15 @@ impl From<f32> for RangeOrFixed<f32> {
     }
 }
 
+impl From<RangeInclusive<f32>> for RangeOrFixed<f32> {
+    fn from(range: RangeInclusive<f32>) -> Self {
+        Self::Range {
+            min: *range.start(),
+            max: *range.end(),
+        }
+    }
+}
+
 impl Default for RangeOrFixed<usize> {
     fn default() -> Self {
         Self::Fixed(0)
@@ -39,6 +49,15 @@ impl Default for RangeOrFixed<usize> {
 impl From<usize> for RangeOrFixed<usize> {
     fn from(v: usize) -> Self {
         Self::Fixed(v)
+    }
+}
+
+impl From<RangeInclusive<usize>> for RangeOrFixed<usize> {
+    fn from(range: RangeInclusive<usize>) -> Self {
+        Self::Range {
+            min: *range.start(),
+            max: *range.end(),
+        }
     }
 }
 
