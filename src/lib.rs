@@ -5,7 +5,7 @@
 //! [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 //! [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 //!
-//! Particle systems plugin for [bevy](https://bevyengine.org)
+//! Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system
 //!
 //! > This is a work in progress with many missing features, it is not suitable for production
 
@@ -57,11 +57,13 @@ pub mod prelude {
 }
 
 use crate::modifiers::{
-    AngularVelocityOverTime, ColorOverLifeTime, ColorOverSpeed, MaxParticleCount, MaxParticleSize,
-    MaxParticleSpeed, ParticleGravity, PerlinNoise, RotationOverTime, RotationOverVelocity,
-    SizeOverSpeed, SizeOverTime, SpeedOverTime, VelocityOverTime,
+    AngularVelocityOverTime, ColorOverLifeTime, ColorOverSpeed, LinearVelocityOverLifeTime,
+    MaxParticleCount, MaxParticleSize, MaxParticleSpeed, OrbitalVelocityOverLifeTime,
+    ParticleGravity, PerlinNoise, RotationOverTime, RotationOverVelocity, SizeOverSpeed,
+    SizeOverTime, SpeedOverTime, VelocityOverTime,
 };
 use prelude::*;
+use systems::{apply_modifier, apply_rng_modifier, apply_system_modifier};
 
 const PARTICLE_UPDATE: &str = "particle_update";
 const PARTICLE_EMISSION: &str = "particle_emission";
@@ -106,6 +108,8 @@ impl Plugin for ParticlesPlugin {
             .register_inspectable::<AngularVelocityOverTime>()
             .register_inspectable::<SpeedOverTime>()
             .register_inspectable::<VelocityOverTime>()
+            .register_inspectable::<OrbitalVelocityOverLifeTime>()
+            .register_inspectable::<LinearVelocityOverLifeTime>()
             .register_inspectable::<ParticleGravity>()
             .register_inspectable::<SizeOverTime>()
             .register_inspectable::<SizeOverSpeed>()
@@ -118,20 +122,22 @@ impl Plugin for ParticlesPlugin {
             .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
             .add_system(systems::compute_particles_aabb.after(PARTICLE_UPDATE))
             // TODO: merge all systems in one to avoid so many queries
-            .add_system(systems::apply_system_modifier::<MaxParticleCount>.after(PARTICLE_EMISSION))
-            .add_system(systems::apply_modifier::<MaxParticleSize>.after(PARTICLE_EMISSION))
-            .add_system(systems::apply_modifier::<ParticleGravity>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<MaxParticleSpeed>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<SpeedOverTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<VelocityOverTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<RotationOverVelocity>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<RotationOverTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_modifier::<ColorOverSpeed>.after(PARTICLE_UPDATE))
-            .add_system(systems::apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
+            .add_system(apply_system_modifier::<MaxParticleCount>.after(PARTICLE_EMISSION))
+            .add_system(apply_modifier::<MaxParticleSize>.after(PARTICLE_EMISSION))
+            .add_system(apply_modifier::<ParticleGravity>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<MaxParticleSpeed>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<SpeedOverTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<VelocityOverTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<LinearVelocityOverLifeTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<OrbitalVelocityOverLifeTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<AngularVelocityOverTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<SizeOverTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<RotationOverVelocity>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<RotationOverTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<ColorOverSpeed>.after(PARTICLE_UPDATE))
+            .add_system(apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
 
         let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
         let particle_shader = Shader::from_wgsl(include_str!("render/particles.wgsl"));

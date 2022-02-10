@@ -7,9 +7,9 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 
-Particle systems plugin for [bevy](https://bevyengine.org)
+Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system
 
-> This is a work in progress with many missing features and bugs, it is not suitable for production
+> This is a work in progress with many missing features, it is not suitable for production
 
 <!-- cargo-sync-readme end -->
 
@@ -50,6 +50,8 @@ You can then use `ParticleSystemBundle` to spawn particle systems.
 |`SpeedOverTime`  | Changes particle speed over time |
 |`VelocityOverTime` | Changes particle velocity over time |
 |`AngularVelocityOverTime`  | Changes particle angular velocity (`z` rotation) over time |
+|`OrbitalVelocityOverLifeTime` | Changes the particle velocity around the center over its lifetime |
+|`LinearVelocityOverLifeTime` | Changes the particle velocity linearly over its lifetime |
 |`SizeOverTime` | Changes particle size over time |
 |`SizeOverSpeed`  | Changes particle size over its speed |
 |`RotationOverVelocity` | Rotates particles according to its velocity and direction |
@@ -61,7 +63,7 @@ You can then use `ParticleSystemBundle` to spawn particle systems.
 ## Common mistakes
 
 - Rotating and scaling the particle system entity's `Transform` is often a bad idea, prefer using the `ParticleEmitter::transform` field.
-- Using conflicting modifers like `ColorOverLifetime`/`ColorOverSpeed` or `SizeOverTime/SizeOverSpeed` can lead to unexpected behaviors
+- Using conflicting modifers like `ColorOverLifetime`/`ColorOverSpeed` or `SizeOverTime`/`SizeOverSpeed` can lead to unexpected behaviors
 
 ## Cargo Features
 

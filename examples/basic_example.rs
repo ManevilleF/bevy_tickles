@@ -56,6 +56,7 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
         .insert(SizeOverTime(0.5))
         .insert(ParticleGravity(Vec3::new(0., -1.5, 0.)))
         .insert(AngularVelocityOverTime(1.0))
+        .insert(OrbitalVelocityOverLifeTime::default())
         .insert(Name::new("Particle System"));
 }
 

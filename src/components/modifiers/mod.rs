@@ -18,7 +18,10 @@ pub use {
     perlin_noise::{NoiseQuality, PerlinNoise},
     rotation::{RotationOverTime, RotationOverVelocity},
     size::{SizeOverSpeed, SizeOverTime},
-    velocity::{AngularVelocityOverTime, SpeedOverTime, VelocityOverTime},
+    velocity::{
+        AngularVelocityOverTime, LinearVelocityOverLifeTime, OrbitalVelocityOverLifeTime,
+        SpeedOverTime, VelocityOverTime,
+    },
 };
 
 /// Common trait for particle system modifiers
