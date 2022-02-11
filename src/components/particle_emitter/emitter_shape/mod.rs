@@ -111,6 +111,32 @@ pub struct EmitterShape {
     pub mode: EmissionMode,
 }
 
+impl EmissionSpread {
+    pub(crate) fn update_index(&mut self) -> (f32, f32) {
+        let previous_index = if self.upwards {
+            self.current_index += self.amount;
+            self.current_index - self.amount
+        } else {
+            self.current_index -= self.amount;
+            self.current_index + self.amount
+        };
+        match self.loop_mode {
+            SpreadLoopMode::Loop => {
+                if self.current_index > 1.0 {
+                    self.current_index = 1.0 - self.current_index;
+                }
+            }
+            SpreadLoopMode::PingPong => {
+                if self.current_index < 0.0 || self.current_index > 1.0 {
+                    self.upwards = !self.upwards;
+                    self.current_index = previous_index;
+                }
+            }
+        }
+        (previous_index, self.current_index)
+    }
+}
+
 impl EmitterShape {
     pub(crate) fn emit_particle(&mut self, rng: &mut impl Rng) -> EmittedParticle {
         let mut particle = match &mut self.mode {
