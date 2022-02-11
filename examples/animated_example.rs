@@ -55,11 +55,14 @@ fn spawn_particle_system(
             },
             particle_emitter: ParticleEmitter {
                 rate: 300.0,
-                shape: Shape::Sphere(Sphere {
-                    radius: 10.0,
+                shape: EmitterShape {
+                    shape: Shape::Sphere(Sphere {
+                        radius: 10.0,
+                        hemisphere: false,
+                    }),
                     thickness: 0.0,
                     ..Default::default()
-                }),
+                },
                 ..Default::default()
             },
             ..Default::default()

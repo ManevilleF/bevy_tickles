@@ -61,10 +61,13 @@ fn spawn_particle_system(
             },
             particle_emitter: ParticleEmitter {
                 rate: 0.0,
-                shape: Shape::Sphere(Sphere {
-                    radius: 0.0,
+                shape: EmitterShape {
+                    shape: hape::Sphere(Sphere {
+                        radius: 0.0,
+                        ..Default::default()
+                    }),
                     ..Default::default()
-                }),
+                },
                 bursts: vec![Burst {
                     time: 0.0,
                     count: RangeOrFixed::Fixed(1),

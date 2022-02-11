@@ -12,7 +12,7 @@ pub use {
     particle_emitter::{
         emitter_shape::{
             shape_enum::Shape, shapes, EmissionSpread, EmitterDirectionMode,
-            EmitterDirectionParams, SpreadLoopMode,
+            EmitterDirectionParams, EmitterShape, SpreadLoopMode,
         },
         Burst, EmitterDuration, ParticleEmitter,
     },

@@ -19,7 +19,7 @@ pub enum Shape {
     /// Emit particles from a line segment. The particles move in the emitter object’s upward (Y) direction.
     Edge(shapes::Edge),
     // TODO: Implement mesh shape
-    // Custom(Mesh),
+    // ConvexMesh(Mesh),
 }
 
 impl Default for Shape {

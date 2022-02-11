@@ -1,4 +1,4 @@
-use super::{EmittedParticle, Emitter, EmitterDirectionParams};
+use super::{EmittedParticle, Emitter};
 use crate::{random_in_line, random_in_radius, EmitterDirectionMode};
 use bevy::prelude::Vec3;
 use rand::Rng;
@@ -12,10 +12,8 @@ const PI_2: f32 = PI * 2.0;
 pub struct Sphere {
     /// Sphere radius
     pub radius: f32,
-    #[cfg_attr(feature = "inspector", inspectable(min = 0.0, max = 1.0))]
     /// Uses a hemisphere instead
     pub hemisphere: bool,
-    // TODO: Add uniform algorithm
 }
 
 /// Initializes particles at randomly-sampled positions within a box and directs them out of one of the six box faces.
@@ -24,7 +22,6 @@ pub struct Sphere {
 pub struct Box {
     /// Box half extents
     pub extents: Vec3,
-    // TODO: Implement edge_only feature
 }
 
 /// Initializes particles at the tip of a cone and directs them at random angles out of the cone.
@@ -106,11 +103,16 @@ impl Emitter for Box {
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
-        let position = Vec3::new(
-            random_in_line(self.extents.x, thickness, rng),
-            random_in_line(self.extents.y, thickness, rng),
-            random_in_line(self.extents.z, thickness, rng),
+        let mut position = Vec3::new(
+            rng.gen_range(-self.extents.x..=self.extents.x),
+            rng.gen_range(-self.extents.y..=self.extents.y),
+            rng.gen_range(-self.extents.z..=self.extents.z),
         );
+        match rng.gen_range(0..=2) {
+            0 => position.x = random_in_line(self.extents.x, thickness, rng),
+            1 => position.y = random_in_line(self.extents.y, thickness, rng),
+            _ => position.z = random_in_line(self.extents.z, thickness, rng),
+        }
         EmittedParticle {
             position,
             direction: match direction_mode {
