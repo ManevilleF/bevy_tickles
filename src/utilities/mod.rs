@@ -23,7 +23,7 @@ pub(crate) fn random_in_radius(radius: f32, thickness: f32, rng: &mut impl Rng) 
 
 pub(crate) fn random_in_line(half_extent: f32, thickness: f32, rng: &mut impl Rng) -> f32 {
     let point = random_in_radius(half_extent, thickness, rng);
-    if rng.gen_range(0..=1) == 0 {
+    if rng.gen_ratio(1, 2) {
         point
     } else {
         -point

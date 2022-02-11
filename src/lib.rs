@@ -26,6 +26,8 @@
     clippy::multiple_crate_versions
 )]
 
+extern crate core;
+
 mod bundle;
 /// Particle system components
 pub mod components;

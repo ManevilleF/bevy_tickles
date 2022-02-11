@@ -177,3 +177,12 @@ impl Default for EmitterDirectionParams {
         }
     }
 }
+
+impl Default for EmittedParticle {
+    fn default() -> Self {
+        Self {
+            position: Default::default(),
+            direction: Vec3::Y,
+        }
+    }
+}

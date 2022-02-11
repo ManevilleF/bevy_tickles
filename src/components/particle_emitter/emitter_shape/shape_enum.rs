@@ -18,8 +18,8 @@ pub enum Shape {
     Box(shapes::Box),
     /// Emit particles from a line segment. The particles move in the emitter object’s upward (Y) direction.
     Edge(shapes::Edge),
-    // TODO: Implement mesh shape
-    // ConvexMesh(Mesh),
+    /// Emits particles at randomly-sampled positions within a convex mesh and directs them outwards from the center
+    ConvexMesh(shapes::ConvexMesh),
 }
 
 impl Default for Shape {
@@ -41,6 +41,7 @@ impl Emitter for Shape {
             Shape::Cone(s) => s.emit_particle(rng, thickness, direction_mode),
             Shape::Box(s) => s.emit_particle(rng, thickness, direction_mode),
             Shape::Edge(s) => s.emit_particle(rng, thickness, direction_mode),
+            Shape::ConvexMesh(s) => s.emit_particle(rng, thickness, direction_mode),
         }
     }
 }
@@ -72,5 +73,11 @@ impl From<shapes::Circle> for Shape {
 impl From<shapes::Edge> for Shape {
     fn from(v: shapes::Edge) -> Self {
         Self::Edge(v)
+    }
+}
+
+impl From<shapes::ConvexMesh> for Shape {
+    fn from(v: shapes::ConvexMesh) -> Self {
+        Self::ConvexMesh(v)
     }
 }
