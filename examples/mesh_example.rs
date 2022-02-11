@@ -37,12 +37,15 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             particle_emitter: ParticleEmitter {
                 rate: 100.0,
                 shape: EmitterShape {
-                    shape: Shape::ConvexMesh(ConvexMesh(Mesh::from(Torus {
-                        radius: 5.0,
-                        ring_radius: 2.0,
-                        subdivisions_segments: 30,
-                        subdivisions_sides: 10,
-                    }))),
+                    shape: Shape::ConvexMesh(ConvexMesh {
+                        mesh: Mesh::from(Torus {
+                            radius: 5.0,
+                            ring_radius: 2.0,
+                            subdivisions_segments: 30,
+                            subdivisions_sides: 10,
+                        }),
+                        nominal_center: Vec3::ZERO,
+                    }),
                     thickness: 0.0,
                     ..Default::default()
                 },

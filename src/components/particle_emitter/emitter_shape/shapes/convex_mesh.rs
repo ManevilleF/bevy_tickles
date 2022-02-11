@@ -4,10 +4,15 @@ use bevy::prelude::{shape::Cube, Mesh, Vec3};
 use bevy::render::mesh::VertexAttributeValues;
 use rand::Rng;
 
-/// Initializes particles at randomly-sampled positions within a convex mesh and directs them outwards from the center
+/// Initializes particles at randomly-sampled positions within a convex mesh and directs them outwards from the `nominal_center`
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
-pub struct ConvexMesh(pub Mesh);
+pub struct ConvexMesh {
+    /// The mesh object
+    pub mesh: Mesh,
+    /// The *nominal center* of the convex mesh
+    pub nominal_center: Vec3,
+}
 
 impl Emitter for ConvexMesh {
     fn emit_random_particle(
@@ -16,7 +21,7 @@ impl Emitter for ConvexMesh {
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
-        let mesh = &self.0;
+        let mesh = &self.mesh;
         if mesh.count_vertices() == 0 {
             return Default::default();
         }
@@ -32,7 +37,9 @@ impl Emitter for ConvexMesh {
         EmittedParticle {
             position: position * coef,
             direction: match direction_mode {
-                EmitterDirectionMode::Automatic => position.try_normalize().unwrap_or(Vec3::Y),
+                EmitterDirectionMode::Automatic => (position - self.nominal_center)
+                    .try_normalize()
+                    .unwrap_or(Vec3::Y),
                 EmitterDirectionMode::Fixed(dir) => dir,
             },
         }
@@ -50,6 +57,9 @@ impl Emitter for ConvexMesh {
 
 impl Default for ConvexMesh {
     fn default() -> Self {
-        Self(Mesh::from(Cube::default()))
+        Self {
+            mesh: Mesh::from(Cube::default()),
+            nominal_center: Default::default(),
+        }
     }
 }
