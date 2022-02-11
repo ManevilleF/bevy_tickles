@@ -1,5 +1,5 @@
 use super::{EmittedParticle, Emitter, EmitterDirectionMode};
-use crate::shapes;
+use crate::{shapes, EmissionSpread};
 use bevy::prelude::Reflect;
 use rand::Rng;
 
@@ -29,19 +29,35 @@ impl Default for Shape {
 }
 
 impl Emitter for Shape {
-    fn emit_particle(
+    fn emit_random_particle(
         &self,
         rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
         match self {
-            Shape::Sphere(s) => s.emit_particle(rng, thickness, direction_mode),
-            Shape::Circle(s) => s.emit_particle(rng, thickness, direction_mode),
-            Shape::Cone(s) => s.emit_particle(rng, thickness, direction_mode),
-            Shape::Box(s) => s.emit_particle(rng, thickness, direction_mode),
-            Shape::Edge(s) => s.emit_particle(rng, thickness, direction_mode),
-            Shape::ConvexMesh(s) => s.emit_particle(rng, thickness, direction_mode),
+            Shape::Sphere(s) => s.emit_random_particle(rng, thickness, direction_mode),
+            Shape::Circle(s) => s.emit_random_particle(rng, thickness, direction_mode),
+            Shape::Cone(s) => s.emit_random_particle(rng, thickness, direction_mode),
+            Shape::Box(s) => s.emit_random_particle(rng, thickness, direction_mode),
+            Shape::Edge(s) => s.emit_random_particle(rng, thickness, direction_mode),
+            Shape::ConvexMesh(s) => s.emit_random_particle(rng, thickness, direction_mode),
+        }
+    }
+
+    fn spread_particle(
+        &self,
+        spread: &mut EmissionSpread,
+        thickness: f32,
+        direction_mode: EmitterDirectionMode,
+    ) -> EmittedParticle {
+        match self {
+            Shape::Sphere(s) => s.spread_particle(spread, thickness, direction_mode),
+            Shape::Circle(s) => s.spread_particle(spread, thickness, direction_mode),
+            Shape::Cone(s) => s.spread_particle(spread, thickness, direction_mode),
+            Shape::Box(s) => s.spread_particle(spread, thickness, direction_mode),
+            Shape::Edge(s) => s.spread_particle(spread, thickness, direction_mode),
+            Shape::ConvexMesh(s) => s.spread_particle(spread, thickness, direction_mode),
         }
     }
 }

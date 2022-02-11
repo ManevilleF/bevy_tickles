@@ -74,9 +74,16 @@ pub struct EmittedParticle {
 }
 
 pub trait Emitter: Debug + Clone {
-    fn emit_particle(
+    fn emit_random_particle(
         &self,
         rng: &mut impl Rng,
+        thickness: f32,
+        direction_mode: EmitterDirectionMode,
+    ) -> EmittedParticle;
+
+    fn spread_particle(
+        &self,
+        spread: &mut EmissionSpread,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle;
@@ -101,10 +108,18 @@ pub struct EmitterShape {
 }
 
 impl EmitterShape {
-    pub(crate) fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle {
-        let mut particle =
-            self.shape
-                .emit_particle(rng, self.thickness, self.direction_params.base_mode);
+    pub(crate) fn emit_particle(&mut self, rng: &mut impl Rng) -> EmittedParticle {
+        let mut particle = match &mut self.mode {
+            EmissionMode::Random => self.shape.emit_random_particle(
+                rng,
+                self.thickness,
+                self.direction_params.base_mode,
+            ),
+            EmissionMode::Spread(spread) => {
+                self.shape
+                    .spread_particle(spread, self.thickness, self.direction_params.base_mode)
+            }
+        };
         if self.direction_params.randomize_direction > 0.0 {
             let random_direction = Vec3::new(
                 rng.gen_range(-1.0..=1.0),
