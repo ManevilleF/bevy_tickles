@@ -1,4 +1,4 @@
-use crate::components::particle_emitter::{EmittedParticle, EmitterShape};
+use super::{EmittedParticle, Emitter, EmitterDirectionMode};
 use crate::shapes;
 use bevy::prelude::Reflect;
 use rand::Rng;
@@ -16,6 +16,8 @@ pub enum Shape {
     Cone(shapes::Cone),
     /// Initializes particles at randomly-sampled positions within a box and directs them out of one of the six box faces.
     Box(shapes::Box),
+    /// Emit particles from a line segment. The particles move in the emitter object’s upward (Y) direction.
+    Edge(shapes::Edge),
     // TODO: Implement mesh shape
     // Custom(Mesh),
 }
@@ -26,13 +28,19 @@ impl Default for Shape {
     }
 }
 
-impl EmitterShape for Shape {
-    fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle {
+impl Emitter for Shape {
+    fn emit_particle(
+        &self,
+        rng: &mut impl Rng,
+        thickness: f32,
+        direction_mode: EmitterDirectionMode,
+    ) -> EmittedParticle {
         match self {
-            Shape::Sphere(s) => s.emit_particle(rng),
-            Shape::Circle(s) => s.emit_particle(rng),
-            Shape::Cone(s) => s.emit_particle(rng),
-            Shape::Box(s) => s.emit_particle(rng),
+            Shape::Sphere(s) => s.emit_particle(rng, thickness, direction_mode),
+            Shape::Circle(s) => s.emit_particle(rng, thickness, direction_mode),
+            Shape::Cone(s) => s.emit_particle(rng, thickness, direction_mode),
+            Shape::Box(s) => s.emit_particle(rng, thickness, direction_mode),
+            Shape::Edge(s) => s.emit_particle(rng, thickness, direction_mode),
         }
     }
 }
@@ -58,5 +66,11 @@ impl From<shapes::Cone> for Shape {
 impl From<shapes::Circle> for Shape {
     fn from(v: shapes::Circle) -> Self {
         Self::Circle(v)
+    }
+}
+
+impl From<shapes::Edge> for Shape {
+    fn from(v: shapes::Edge) -> Self {
+        Self::Edge(v)
     }
 }
