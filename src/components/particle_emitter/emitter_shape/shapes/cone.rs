@@ -37,6 +37,7 @@ impl Emitter for Cone {
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
+        rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {

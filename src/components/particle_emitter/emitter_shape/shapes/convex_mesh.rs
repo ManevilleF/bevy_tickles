@@ -15,6 +15,7 @@ pub struct ConvexMesh {
 }
 
 impl Emitter for ConvexMesh {
+    // TODO: use triangles ?
     fn emit_random_particle(
         &self,
         rng: &mut impl Rng,
@@ -48,6 +49,7 @@ impl Emitter for ConvexMesh {
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
+        rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {

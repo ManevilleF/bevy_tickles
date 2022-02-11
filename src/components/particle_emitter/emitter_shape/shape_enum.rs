@@ -48,16 +48,17 @@ impl Emitter for Shape {
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
+        rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
         match self {
-            Shape::Sphere(s) => s.spread_particle(spread, thickness, direction_mode),
-            Shape::Circle(s) => s.spread_particle(spread, thickness, direction_mode),
-            Shape::Cone(s) => s.spread_particle(spread, thickness, direction_mode),
-            Shape::Box(s) => s.spread_particle(spread, thickness, direction_mode),
-            Shape::Edge(s) => s.spread_particle(spread, thickness, direction_mode),
-            Shape::ConvexMesh(s) => s.spread_particle(spread, thickness, direction_mode),
+            Shape::Sphere(s) => s.spread_particle(spread, rng, thickness, direction_mode),
+            Shape::Circle(s) => s.spread_particle(spread, rng, thickness, direction_mode),
+            Shape::Cone(s) => s.spread_particle(spread, rng, thickness, direction_mode),
+            Shape::Box(s) => s.spread_particle(spread, rng, thickness, direction_mode),
+            Shape::Edge(s) => s.spread_particle(spread, rng, thickness, direction_mode),
+            Shape::ConvexMesh(s) => s.spread_particle(spread, rng, thickness, direction_mode),
         }
     }
 }

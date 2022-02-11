@@ -45,6 +45,9 @@ pub struct EmissionSpread {
     #[doc(hidden)]
     #[cfg_attr(feature = "inspector", inspectable(read_only))]
     pub current_index: f32,
+    #[doc(hidden)]
+    #[cfg_attr(feature = "inspector", inspectable(read_only))]
+    pub upwards: bool,
 }
 
 /// Emission modes
@@ -84,6 +87,7 @@ pub trait Emitter: Debug + Clone {
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
+        rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle;
@@ -115,10 +119,12 @@ impl EmitterShape {
                 self.thickness,
                 self.direction_params.base_mode,
             ),
-            EmissionMode::Spread(spread) => {
-                self.shape
-                    .spread_particle(spread, self.thickness, self.direction_params.base_mode)
-            }
+            EmissionMode::Spread(spread) => self.shape.spread_particle(
+                spread,
+                rng,
+                self.thickness,
+                self.direction_params.base_mode,
+            ),
         };
         if self.direction_params.randomize_direction > 0.0 {
             let random_direction = Vec3::new(
@@ -179,6 +185,7 @@ impl Default for EmissionSpread {
             loop_mode: Default::default(),
             uniform: false,
             current_index: 0.0,
+            upwards: true,
         }
     }
 }

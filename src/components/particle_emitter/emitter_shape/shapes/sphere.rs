@@ -44,6 +44,7 @@ impl Emitter for Sphere {
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
+        rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
