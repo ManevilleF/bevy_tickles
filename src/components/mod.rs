@@ -11,8 +11,8 @@ mod particle_system;
 pub use {
     particle_emitter::{
         emitter_shape::{
-            shape_enum::Shape, shapes, EmissionSpread, EmitterDirectionMode,
-            EmitterDirectionParams, EmitterShape, SpreadLoopMode,
+            shape_enum::Shape, shapes, AxisSpread, EmissionMode, EmissionSpread,
+            EmitterDirectionMode, EmitterDirectionParams, EmitterShape, SpreadLoopMode,
         },
         Burst, EmitterDuration, ParticleEmitter,
     },

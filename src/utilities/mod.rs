@@ -16,6 +16,12 @@ pub(crate) fn rotation_forward(forward: Vec3) -> Quat {
     Quat::from_mat3(&Mat3::from_cols(right, up, forward))
 }
 
+pub(crate) fn radius_spread(radius: f32, thickness: f32, spread_amount: f32) -> f32 {
+    let ratio = (1.0 - thickness).clamp(0.0, 1.0);
+    let min = radius * ratio;
+    min + (radius - min) * spread_amount.clamp(0.0, 1.0)
+}
+
 pub(crate) fn random_in_radius(radius: f32, thickness: f32, rng: &mut impl Rng) -> f32 {
     let ratio = (1.0 - thickness).clamp(0.0, 1.0);
     rng.gen_range((radius * ratio)..=radius)

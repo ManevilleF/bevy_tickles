@@ -34,7 +34,6 @@ impl Emitter for Edge {
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
-        todo!()
     }
 }
 

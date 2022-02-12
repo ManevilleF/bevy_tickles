@@ -31,23 +31,37 @@ pub enum SpreadLoopMode {
     PingPong,
 }
 
-/// Defines [`EmissionMode::Spread`] parameters
-#[derive(Debug, Copy, Clone, Reflect)]
+/// Spread parameters for one axis
+#[derive(Debug, Copy, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
-pub struct EmissionSpread {
-    /// A value of 0 will allow particles to spawn anywhere in the volume, and a value of 0.1 will only spawn particles at 10% intervals around the shape
+pub struct AxisSpread {
+    /// Amount of spread in each direction:
+    /// A value of 0 will allow particles to spawn anywhere in the volume,
+    /// and a value of 0.1 will only spawn particles at 10% intervals around the shape
+    ///
+    /// Note: For 2D shapes like [`shapes::Edge`] or [`shapes::Circle`] some values will have no effect
     #[cfg_attr(feature = "inspector", inspectable(min = 0.0, max = 1.0))]
     pub amount: f32,
     /// Lopping mode for the spread
     pub loop_mode: SpreadLoopMode,
-    /// Particles will be evenly distributed in the shape
+    /// Particles will be evenly distributed in the volume
     pub uniform: bool,
+}
+
+/// Defines [`EmissionMode::Spread`] parameters
+#[derive(Debug, Copy, Clone)]
+#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
+pub struct EmissionSpread {
+    /// Spread parameters for each axis
+    ///
+    /// Note: these values might be differently by shapes
+    pub spreads: [AxisSpread; 3],
     #[doc(hidden)]
     #[cfg_attr(feature = "inspector", inspectable(read_only))]
-    pub current_index: f32,
+    pub current_index: Vec3,
     #[doc(hidden)]
     #[cfg_attr(feature = "inspector", inspectable(read_only))]
-    pub upwards: bool,
+    pub upwards: [bool; 3],
 }
 
 /// Emission modes
@@ -112,28 +126,52 @@ pub struct EmitterShape {
 }
 
 impl EmissionSpread {
-    pub(crate) fn update_index(&mut self) -> (f32, f32) {
-        let previous_index = if self.upwards {
-            self.current_index += self.amount;
-            self.current_index - self.amount
+    #[inline]
+    fn previous_at(&self, at: usize) -> f32 {
+        if self.upwards[at] {
+            self.current_index[at] - self.spreads[at].amount
         } else {
-            self.current_index -= self.amount;
-            self.current_index + self.amount
-        };
-        match self.loop_mode {
-            SpreadLoopMode::Loop => {
-                if self.current_index > 1.0 {
-                    self.current_index = 1.0 - self.current_index;
-                }
-            }
-            SpreadLoopMode::PingPong => {
-                if self.current_index < 0.0 || self.current_index > 1.0 {
-                    self.upwards = !self.upwards;
-                    self.current_index = previous_index;
-                }
-            }
+            self.current_index[at] + self.spreads[at].amount
         }
-        (previous_index, self.current_index)
+    }
+
+    fn update_index_at(&mut self, at: usize) -> (f32, f32) {
+        let spread = self.spreads[at];
+        let amount = spread.amount;
+        let previous_index = self.current_index[at];
+        let index = &mut self.current_index[at];
+        if !amount.is_normal() {
+            *index = 0.0;
+            at.checked_sub(1).map(|v| {
+                self.update_index_at(v);
+            });
+            return (0.0, 0.0);
+        }
+        if self.upwards[at] {
+            *index += amount;
+        } else {
+            *index -= amount;
+        };
+        if *index < 0.0 || *index > 1.0 {
+            match spread.loop_mode {
+                SpreadLoopMode::Loop => *index = (1.0 - *index).clamp(0.0, 1.0),
+                SpreadLoopMode::PingPong => {
+                    self.upwards[at] = !self.upwards[at];
+                    *index = previous_index;
+                }
+            }
+            at.checked_sub(1).map(|v| {
+                self.update_index_at(v);
+            });
+        }
+        (previous_index, self.current_index[at])
+    }
+
+    pub(crate) fn update_index(&mut self) -> (Vec3, Vec3) {
+        let (pz, z) = self.update_index_at(2);
+        let (py, y) = (self.previous_at(1), self.current_index[1]);
+        let (px, x) = (self.previous_at(0), self.current_index[0]);
+        (Vec3::new(px, py, pz), Vec3::new(x, y, z))
     }
 }
 
@@ -204,14 +242,22 @@ impl Default for SpreadLoopMode {
     }
 }
 
-impl Default for EmissionSpread {
+impl Default for AxisSpread {
     fn default() -> Self {
         Self {
             amount: 0.1,
             loop_mode: Default::default(),
             uniform: false,
-            current_index: 0.0,
-            upwards: true,
+        }
+    }
+}
+
+impl Default for EmissionSpread {
+    fn default() -> Self {
+        Self {
+            spreads: [AxisSpread::default(); 3],
+            current_index: Vec3::ZERO,
+            upwards: [true, true, true],
         }
     }
 }

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_tickles::prelude::modifiers::*;
-use bevy_tickles::prelude::shapes::Sphere;
+use bevy_tickles::prelude::shapes::{Circle, Sphere};
 use bevy_tickles::prelude::*;
 
 fn main() {
@@ -25,25 +25,36 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             transform: Transform::from_xyz(0., 5., 0.),
             material: ParticleMaterial::Image(asset_server.load("wrench.png")),
             particle_params: ParticleParams {
-                rotation: RotationMode::FreeRotation {
-                    start_rotation: RangeOrFixed::Range {
-                        min: -6.0,
-                        max: 6.0,
-                    },
-                    start_angular_velocity: Default::default(),
-                },
+                rotation: RotationMode::AlignToDirection { offset: -1.8 },
                 start_size: 0.0.into(),
-                start_speed: 2.0.into(),
+                start_speed: 0.0.into(),
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
                 rate: 20.0,
                 shape: EmitterShape {
-                    shape: Shape::Sphere(Sphere {
-                        radius: 0.2,
+                    shape: Shape::Circle(Circle {
+                        radius: 2.0,
                         ..Default::default()
                     }),
-                    ..Default::default()
+                    thickness: 1.0,
+                    direction_params: Default::default(),
+                    mode: EmissionMode::Spread(EmissionSpread {
+                        spreads: [
+                            AxisSpread::default(), // Ignored for circles
+                            AxisSpread {
+                                amount: 0.05,
+                                uniform: true,
+                                ..Default::default()
+                            },
+                            AxisSpread {
+                                amount: 0.1,
+                                uniform: true,
+                                loop_mode: SpreadLoopMode::PingPong,
+                            },
+                        ],
+                        ..Default::default()
+                    }),
                 },
                 ..Default::default()
             },

@@ -1,6 +1,6 @@
 use crate::components::particle_emitter::emitter_shape::{EmittedParticle, Emitter};
 use crate::shapes::PI_2;
-use crate::{random_in_radius, EmissionSpread, EmitterDirectionMode};
+use crate::{radius_spread, random_in_radius, EmissionSpread, EmitterDirectionMode};
 use bevy::prelude::Vec3;
 use rand::Rng;
 
@@ -38,14 +38,18 @@ impl Emitter for Circle {
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
-        let range = random_in_radius(self.radius, thickness, rng);
         let (previous_index, index) = spread.update_index();
         let theta = PI_2
-            * if spread.uniform {
-                index
+            * if spread.spreads[1].uniform {
+                index.y
             } else {
-                rng.gen_range(previous_index.min(index)..=index.max(previous_index))
+                rng.gen_range(previous_index.y.min(index.y)..=index.y.max(previous_index.y))
             };
+        let range = if spread.spreads[2].uniform {
+            radius_spread(self.radius, thickness, index.z)
+        } else {
+            random_in_radius(self.radius, thickness, rng)
+        };
         let position = Vec3::new(range * theta.cos(), 0., range * theta.sin());
         EmittedParticle {
             position,
