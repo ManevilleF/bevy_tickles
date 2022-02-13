@@ -252,6 +252,19 @@ impl Default for AxisSpread {
     }
 }
 
+impl AxisSpread {
+    #[inline]
+    #[must_use]
+    /// No spread
+    pub const fn none() -> Self {
+        Self {
+            amount: 0.0,
+            loop_mode: SpreadLoopMode::Loop,
+            uniform: false,
+        }
+    }
+}
+
 impl Default for EmissionSpread {
     fn default() -> Self {
         Self {

@@ -62,7 +62,7 @@ fn spawn_particle_system(
             particle_emitter: ParticleEmitter {
                 rate: 0.0,
                 shape: EmitterShape {
-                    shape: hape::Sphere(Sphere {
+                    shape: Shape::Sphere(Sphere {
                         radius: 0.0,
                         ..Default::default()
                     }),
@@ -94,10 +94,23 @@ fn spawn_particle_system(
             },
             particle_emitter: ParticleEmitter {
                 rate: 0.0,
-                shape: Shape::Circle(Circle {
-                    radius: 1.0,
+                shape: EmitterShape {
+                    shape: Shape::Circle(Circle { radius: 1.0 }),
                     thickness: 0.0,
-                }),
+                    mode: EmissionMode::Spread(EmissionSpread {
+                        spreads: [
+                            AxisSpread::none(),
+                            AxisSpread {
+                                amount: 1.0 / 50.0,
+                                uniform: true,
+                                ..Default::default()
+                            },
+                            AxisSpread::none(),
+                        ],
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                },
                 bursts: vec![Burst {
                     time: 0.0,
                     count: RangeOrFixed::Fixed(50),
@@ -136,11 +149,14 @@ fn spawn_particle_system(
             },
             particle_emitter: ParticleEmitter {
                 rate: 0.0,
-                shape: Shape::Sphere(Sphere {
-                    radius: 2.0,
-                    hemisphere: true,
+                shape: EmitterShape {
+                    shape: Shape::Sphere(Sphere {
+                        radius: 2.0,
+                        hemisphere: true,
+                    }),
                     thickness: 0.0,
-                }),
+                    ..Default::default()
+                },
                 bursts: vec![Burst {
                     time: 0.0,
                     count: RangeOrFixed::Fixed(50),

@@ -75,7 +75,7 @@ impl Emitter for ConvexMesh {
             .attribute(Mesh::ATTRIBUTE_POSITION)
             .expect("No vertex positions set for `ConvexMesh`");
         // TODO: support non uniform spread
-        let vertex_index = (index.z * positions.len() as f32) as usize;
+        let vertex_index = (index.z * (positions.len() - 1) as f32) as usize;
         let position: Vec3 = if let VertexAttributeValues::Float32x3(positions) = positions {
             positions[vertex_index].into()
         } else {

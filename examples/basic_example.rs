@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_tickles::prelude::modifiers::*;
-use bevy_tickles::prelude::shapes::{Box, Circle};
+use bevy_tickles::prelude::shapes::Sphere;
 use bevy_tickles::prelude::*;
 
 fn main() {
@@ -22,39 +22,28 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
     commands.spawn_bundle(DirectionalLightBundle::default());
     commands
         .spawn_bundle(ParticleSystemBundle {
-            transform: Transform::from_xyz(0., 1., 0.),
+            transform: Transform::from_xyz(0., 5., 0.),
             material: ParticleMaterial::Image(asset_server.load("wrench.png")),
             particle_params: ParticleParams {
-                rotation: RotationMode::AlignToDirection { offset: -1.8 },
+                rotation: RotationMode::FreeRotation {
+                    start_rotation: RangeOrFixed::Range {
+                        min: -6.0,
+                        max: 6.0,
+                    },
+                    start_angular_velocity: Default::default(),
+                },
                 start_size: 0.0.into(),
-                start_speed: 0.0.into(),
+                start_speed: 2.0.into(),
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
                 rate: 20.0,
                 shape: EmitterShape {
-                    shape: Shape::Box(Box {
-                        extents: Vec3::splat(3.0),
+                    shape: Shape::Sphere(Sphere {
+                        radius: 0.2,
                         ..Default::default()
                     }),
-                    thickness: 1.0,
-                    direction_params: Default::default(),
-                    mode: EmissionMode::Spread(EmissionSpread {
-                        spreads: [
-                            AxisSpread::default(), // Ignored for circles
-                            AxisSpread {
-                                amount: 0.1,
-                                uniform: true,
-                                ..Default::default()
-                            },
-                            AxisSpread {
-                                amount: 0.1,
-                                uniform: true,
-                                loop_mode: SpreadLoopMode::PingPong,
-                            },
-                        ],
-                        ..Default::default()
-                    }),
+                    ..Default::default()
                 },
                 ..Default::default()
             },
@@ -67,9 +56,9 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                 .add_point(0.5, Color::GREEN)
                 .add_point(1.0, Color::rgba(0.5, 0.5, 1.0, 0.0)),
         ))
-        .insert(SizeOverTime(0.1))
-        .insert(ParticleGravity(Vec3::new(0., 0.0, 0.)))
-        .insert(AngularVelocityOverTime(0.0))
+        .insert(SizeOverTime(0.5))
+        .insert(ParticleGravity(Vec3::new(0., -1.5, 0.)))
+        .insert(AngularVelocityOverTime(1.0))
         .insert(OrbitalVelocityOverLifeTime::default())
         .insert(Name::new("Particle System"));
 }
