@@ -64,7 +64,7 @@ impl Emitter for Sphere {
         let range = if spread.spreads[2].uniform {
             radius_spread(self.radius, thickness, index.z)
         } else {
-            random_in_radius(self.radius, thickness, rng)
+            random_in_radius(self.radius, thickness, rng) // TODO: fix this
         };
         let sin_phi = phi.sin();
         let y = range * sin_phi * theta.sin();

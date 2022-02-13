@@ -1,5 +1,5 @@
 use crate::components::particle_emitter::emitter_shape::{EmittedParticle, Emitter};
-use crate::{random_in_line, EmissionSpread, EmitterDirectionMode};
+use crate::{line_spread, random_in_line, EmissionSpread, EmitterDirectionMode};
 use bevy::prelude::Vec3;
 use rand::Rng;
 
@@ -30,43 +30,60 @@ impl Emitter for Box {
         }
         EmittedParticle {
             position,
-            direction: match direction_mode {
-                EmitterDirectionMode::Automatic => match position.abs().to_array() {
-                    [x, y, z] if x > y && x > z => {
-                        if position.z > 0. {
-                            Vec3::X
-                        } else {
-                            -Vec3::X
-                        }
-                    }
-                    [x, y, z] if y > x && y > z => {
-                        if position.y > 0. {
-                            Vec3::Y
-                        } else {
-                            -Vec3::Y
-                        }
-                    }
-                    _ => {
-                        if position.z > 0. {
-                            Vec3::Z
-                        } else {
-                            -Vec3::Z
-                        }
-                    }
-                },
-                EmitterDirectionMode::Fixed(dir) => dir,
-            },
+            direction: Self::dir(direction_mode, position),
         }
     }
 
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
-        rng: &mut impl Rng,
-        thickness: f32,
+        _rng: &mut impl Rng,
+        _thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
-        todo!()
+        let (_previous_index, index) = spread.update_index();
+        let position = Vec3::new(
+            line_spread(self.extents.x, 1.0, index.x),
+            line_spread(self.extents.y, 1.0, index.y),
+            line_spread(self.extents.z, 1.0, index.z),
+        );
+        // TODO: support thickness
+        // TODO: support non uniform spread
+        EmittedParticle {
+            position,
+            direction: Self::dir(direction_mode, position),
+        }
+    }
+}
+
+impl Box {
+    fn dir(direction_mode: EmitterDirectionMode, position: Vec3) -> Vec3 {
+        match direction_mode {
+            EmitterDirectionMode::Automatic => match position.abs().to_array() {
+                [x, y, z] if x > y && x > z => {
+                    if position.z > 0. {
+                        Vec3::X
+                    } else {
+                        -Vec3::X
+                    }
+                }
+                [x, y, z] if y > x && y > z => {
+                    if position.y > 0. {
+                        Vec3::Y
+                    } else {
+                        -Vec3::Y
+                    }
+                }
+                _ => {
+                    if position.z > 0. {
+                        Vec3::Z
+                    } else {
+                        -Vec3::Z
+                    }
+                }
+            },
+            EmitterDirectionMode::Fixed(dir) => dir,
+        }
     }
 }
 

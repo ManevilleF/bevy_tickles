@@ -19,7 +19,7 @@ pub(crate) fn rotation_forward(forward: Vec3) -> Quat {
 pub(crate) fn radius_spread(radius: f32, thickness: f32, spread_amount: f32) -> f32 {
     let ratio = (1.0 - thickness).clamp(0.0, 1.0);
     let min = radius * ratio;
-    min + (radius - min) * spread_amount.clamp(0.0, 1.0)
+    (radius - min).mul_add(spread_amount.clamp(0.0, 1.0), min)
 }
 
 pub(crate) fn random_in_radius(radius: f32, thickness: f32, rng: &mut impl Rng) -> f32 {
@@ -33,5 +33,13 @@ pub(crate) fn random_in_line(half_extent: f32, thickness: f32, rng: &mut impl Rn
         point
     } else {
         -point
+    }
+}
+
+pub(crate) fn line_spread(half_extent: f32, thickness: f32, spread_amount: f32) -> f32 {
+    if spread_amount > 0.5 {
+        radius_spread(half_extent, thickness, spread_amount * 2.0 - 1.0)
+    } else {
+        -radius_spread(half_extent, thickness, -(spread_amount - 1.0) * 2.0 - 1.0)
     }
 }

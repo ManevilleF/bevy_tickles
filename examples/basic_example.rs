@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_tickles::prelude::modifiers::*;
-use bevy_tickles::prelude::shapes::{Circle, Sphere};
+use bevy_tickles::prelude::shapes::{Box, Circle};
 use bevy_tickles::prelude::*;
 
 fn main() {
@@ -22,7 +22,7 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
     commands.spawn_bundle(DirectionalLightBundle::default());
     commands
         .spawn_bundle(ParticleSystemBundle {
-            transform: Transform::from_xyz(0., 5., 0.),
+            transform: Transform::from_xyz(0., 1., 0.),
             material: ParticleMaterial::Image(asset_server.load("wrench.png")),
             particle_params: ParticleParams {
                 rotation: RotationMode::AlignToDirection { offset: -1.8 },
@@ -33,8 +33,8 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
             particle_emitter: ParticleEmitter {
                 rate: 20.0,
                 shape: EmitterShape {
-                    shape: Shape::Circle(Circle {
-                        radius: 2.0,
+                    shape: Shape::Box(Box {
+                        extents: Vec3::splat(3.0),
                         ..Default::default()
                     }),
                     thickness: 1.0,
@@ -43,7 +43,7 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                         spreads: [
                             AxisSpread::default(), // Ignored for circles
                             AxisSpread {
-                                amount: 0.05,
+                                amount: 0.1,
                                 uniform: true,
                                 ..Default::default()
                             },
@@ -67,9 +67,9 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                 .add_point(0.5, Color::GREEN)
                 .add_point(1.0, Color::rgba(0.5, 0.5, 1.0, 0.0)),
         ))
-        .insert(SizeOverTime(0.5))
-        .insert(ParticleGravity(Vec3::new(0., -1.5, 0.)))
-        .insert(AngularVelocityOverTime(1.0))
+        .insert(SizeOverTime(0.1))
+        .insert(ParticleGravity(Vec3::new(0., 0.0, 0.)))
+        .insert(AngularVelocityOverTime(0.0))
         .insert(OrbitalVelocityOverLifeTime::default())
         .insert(Name::new("Particle System"));
 }

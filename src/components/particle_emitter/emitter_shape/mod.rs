@@ -142,9 +142,9 @@ impl EmissionSpread {
         let index = &mut self.current_index[at];
         if !amount.is_normal() {
             *index = 0.0;
-            at.checked_sub(1).map(|v| {
+            if let Some(v) = at.checked_sub(1) {
                 self.update_index_at(v);
-            });
+            }
             return (0.0, 0.0);
         }
         if self.upwards[at] {
@@ -160,9 +160,9 @@ impl EmissionSpread {
                     *index = previous_index;
                 }
             }
-            at.checked_sub(1).map(|v| {
+            if let Some(v) = at.checked_sub(1) {
                 self.update_index_at(v);
-            });
+            }
         }
         (previous_index, self.current_index[at])
     }

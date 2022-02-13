@@ -48,7 +48,7 @@ impl Emitter for Circle {
         let range = if spread.spreads[2].uniform {
             radius_spread(self.radius, thickness, index.z)
         } else {
-            random_in_radius(self.radius, thickness, rng)
+            random_in_radius(self.radius, thickness, rng) // TODO: fix this
         };
         let position = Vec3::new(range * theta.cos(), 0., range * theta.sin());
         EmittedParticle {

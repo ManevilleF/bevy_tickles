@@ -1,5 +1,5 @@
 use crate::components::particle_emitter::emitter_shape::{EmittedParticle, Emitter};
-use crate::{random_in_line, EmissionSpread, EmitterDirectionMode};
+use crate::{line_spread, random_in_line, EmissionSpread, EmitterDirectionMode};
 use bevy::prelude::Vec3;
 use rand::Rng;
 /// Emit particles from a line segment. The particles move in the emitter object’s upward (Y) direction.
@@ -30,10 +30,20 @@ impl Emitter for Edge {
     fn spread_particle(
         &self,
         spread: &mut EmissionSpread,
-        rng: &mut impl Rng,
+        _rng: &mut impl Rng,
         thickness: f32,
         direction_mode: EmitterDirectionMode,
     ) -> EmittedParticle {
+        let (_previous_index, index) = spread.update_index();
+        let value = line_spread(self.length / 2.0, thickness, index.z);
+        // TODO: implement non uniform
+        EmittedParticle {
+            position: Vec3::new(0.0, 0.0, value),
+            direction: match direction_mode {
+                EmitterDirectionMode::Automatic => Vec3::Y,
+                EmitterDirectionMode::Fixed(dir) => dir,
+            },
+        }
     }
 }
 
