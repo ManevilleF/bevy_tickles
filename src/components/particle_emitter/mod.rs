@@ -1,35 +1,12 @@
-pub mod shape_enum;
-/// Declares available shapes for the particle emitter
-pub mod shapes;
+pub mod emitter_shape;
 
-use crate::{RangeOrFixed, Shape};
+use crate::RangeOrFixed;
 use bevy::ecs::reflect::ReflectComponent;
 use bevy::prelude::{Component, Reflect, Transform, Vec3};
 use bevy::reflect::FromReflect;
+use emitter_shape::{EmittedParticle, EmitterShape};
 use rand::Rng;
 use std::fmt::Debug;
-
-#[derive(Debug, Clone)]
-pub struct EmittedParticle {
-    pub position: Vec3,
-    pub direction: Vec3,
-}
-
-/// Defines the direction of the particles after emission
-#[derive(Debug, Copy, Clone, Reflect)]
-#[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
-pub enum EmitterDirectionMode {
-    /// default, The direction is taken from the shape
-    Automatic,
-    /// All particles will have a fixed direction
-    Fixed(Vec3),
-    /// All particles will have random directions
-    Randomized,
-}
-
-pub trait EmitterShape: Debug + Clone {
-    fn emit_particle(&self, rng: &mut impl Rng) -> EmittedParticle;
-}
 
 /// Describes a single Particle emitter burst
 #[derive(Debug, Default, Clone, Reflect)]
@@ -64,7 +41,7 @@ pub struct ParticleEmitter {
     /// Emitter duration
     pub duration: EmitterDuration,
     /// The shape of the emitter
-    pub shape: Shape,
+    pub shape: EmitterShape,
     /// The rate of particle emission over time (`1.0` means 1 particle per second)
     pub rate: f32,
     /// Custom bursts of particle emission
@@ -75,8 +52,6 @@ pub struct ParticleEmitter {
     pub last_emitted_delta_time: f32,
     /// The shape transform
     pub transform: Transform,
-    /// Particle directions after emission
-    pub direction_mode: EmitterDirectionMode,
 }
 
 impl FromReflect for Burst {
@@ -91,12 +66,6 @@ impl Default for EmitterDuration {
     }
 }
 
-impl Default for EmitterDirectionMode {
-    fn default() -> Self {
-        Self::Automatic
-    }
-}
-
 impl Default for ParticleEmitter {
     fn default() -> Self {
         Self {
@@ -107,7 +76,6 @@ impl Default for ParticleEmitter {
             current_delta_time: 0.0,
             last_emitted_delta_time: 0.0,
             transform: Default::default(),
-            direction_mode: Default::default(),
         }
     }
 }
@@ -149,19 +117,6 @@ impl ParticleEmitter {
             .map(|_| {
                 let mut particle = self.shape.emit_particle(rng);
                 particle.position = matrix.transform_point3(particle.position);
-                match self.direction_mode {
-                    EmitterDirectionMode::Automatic => (),
-                    EmitterDirectionMode::Fixed(dir) => {
-                        particle.direction = dir;
-                    }
-                    EmitterDirectionMode::Randomized => {
-                        particle.direction = Vec3::new(
-                            rng.gen_range(-1.0..=1.0),
-                            rng.gen_range(-1.0..=1.0),
-                            rng.gen_range(-1.0..=1.0),
-                        );
-                    }
-                }
                 particle.direction =
                     matrix.transform_point3(particle.direction.try_normalize().unwrap_or(Vec3::Y));
                 particle

@@ -9,7 +9,8 @@
 
 Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system
 
-> This is a work in progress with many missing features, it is not suitable for production
+> This is a work in progress with many missing features, it is not suitable for production.
+> As this lib is in very early stage, expect the API to change often
 
 <!-- cargo-sync-readme end -->
 
@@ -91,6 +92,12 @@ Run with `cargo run --example explosion_example --features inspector`
 
 ![Alt](./docs/explosion_example.gif "explosion_example gif")
 
+4[Mesh example](examples/mesh_example.rs)
+
+Run with `cargo run --example mesh_example --features inspector`
+
+![Alt](./docs/mesh_example.gif "mesh_example gif")
+
 ## TODO:
 
 - [x] computed visibility with AAB
@@ -107,6 +114,7 @@ Run with `cargo run --example explosion_example --features inspector`
 - [ ] examples of classic particle systems:
   - [ ] Fire
   - [x] Explosion
+  - [x] Mesh emission
   - [ ] Sci Fi Shield
 
 Contributions welcome !

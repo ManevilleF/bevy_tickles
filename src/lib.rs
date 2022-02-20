@@ -7,7 +7,8 @@
 //!
 //! Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system
 //!
-//! > This is a work in progress with many missing features, it is not suitable for production
+//! > This is a work in progress with many missing features, it is not suitable for production.
+//! > As this lib is in very early stage, expect the API to change often
 
 #![forbid(unsafe_code)]
 #![warn(
@@ -25,6 +26,8 @@
     clippy::cast_precision_loss,
     clippy::multiple_crate_versions
 )]
+
+extern crate core;
 
 mod bundle;
 /// Particle system components
@@ -139,7 +142,10 @@ impl Plugin for ParticlesPlugin {
             .add_system(apply_modifier::<ColorOverSpeed>.after(PARTICLE_UPDATE))
             .add_system(apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
 
-        let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
+        let mut shaders = app
+            .world
+            .get_resource_mut::<Assets<Shader>>()
+            .expect("Could not load the `Assets<Shader>` resource from the world");
         let particle_shader = Shader::from_wgsl(include_str!("render/particles.wgsl"));
         shaders.set_untracked(PARTICLE_SHADER_HANDLE, particle_shader);
         if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {

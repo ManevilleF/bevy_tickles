@@ -57,3 +57,7 @@ required-features = ["inspector"]
 [[example]]
 name = "explosion_example"
 required-features = ["inspector"]
+
+[[example]]
+name = "mesh_example"
+required-features = ["inspector"]
