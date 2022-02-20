@@ -4,6 +4,18 @@ use bevy::prelude::Vec3;
 use rand::Rng;
 
 /// Initializes particles at randomly-sampled positions within a box and directs them out of one of the six box faces.
+///
+/// ## Spread
+///
+/// Axes:
+/// * `x` - spread on the `x` axis
+/// * `y` - spread on the `y` axis
+/// * `z` - spread on the `z` axis
+///
+/// ### Missing Spread features:
+///
+/// * The `thickness` is not yet supported
+/// * Non `uniform` spread is not available
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Box {

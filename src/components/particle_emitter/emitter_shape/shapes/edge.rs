@@ -2,7 +2,19 @@ use crate::components::particle_emitter::emitter_shape::{EmittedParticle, Emitte
 use crate::{line_spread, random_in_line, EmissionSpread, EmitterDirectionMode};
 use bevy::prelude::Vec3;
 use rand::Rng;
+
 /// Emit particles from a line segment. The particles move in the emitter object’s upward (Y) direction.
+///
+/// ## Spread
+///
+/// Axes:
+/// * `x` - Not used
+/// * `y` - Not used
+/// * `z` - Spread amount
+///
+/// ### Missing Spread features:
+///
+/// * Non `uniform` spread is not available
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Edge {

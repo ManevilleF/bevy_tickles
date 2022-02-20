@@ -5,6 +5,13 @@ use bevy::prelude::Vec3;
 use rand::Rng;
 
 /// Initializes particles at randomly-sampled positions within a circle in the direction of the emitter’s up axis
+///
+/// ## Spread
+///
+/// Axes:
+/// * `x` - Not used
+/// * `y` - rotation spread
+/// * `z` - radius spread
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Circle {

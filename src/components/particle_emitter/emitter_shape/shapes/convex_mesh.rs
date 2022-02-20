@@ -5,6 +5,19 @@ use bevy::render::mesh::VertexAttributeValues;
 use rand::Rng;
 
 /// Initializes particles at randomly-sampled positions within a convex mesh and directs them outwards from the `nominal_center`
+///
+///
+/// ## Spread
+///
+/// Axes:
+/// * `x` - Not used
+/// * `y` - radius spread
+/// * `z` - ordered vertex spread
+///
+/// ### Missing Spread features:
+///
+/// * The `thickness` is not yet supported
+/// * Non `uniform` spread is not available
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct ConvexMesh {

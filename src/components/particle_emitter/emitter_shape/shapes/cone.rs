@@ -6,6 +6,17 @@ use rand::Rng;
 
 /// Initializes particles at the tip of a cone and directs them at random angles out of the cone.
 /// The cone is oriented along the up axis of the emitter.
+///
+/// ## Spread
+///
+/// Axes:
+/// * `x` - Not used
+/// * `y` - vertical spread
+/// * `z` - rotation spread
+///
+/// ### Missing Spread features:
+///
+/// * Non `uniform` spread is not available
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Cone {

@@ -6,6 +6,13 @@ use rand::Rng;
 use std::f32::consts::PI;
 
 /// Initializes particles at randomly-sampled positions within a sphere and directs them outwards from the center
+///
+/// ## Spread
+///
+/// Axes:
+/// * `x` - rotation spread (phi)
+/// * `y` - rotation spread (theta)
+/// * `z` - radius spread
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "inspector", derive(bevy_inspector_egui::Inspectable))]
 pub struct Sphere {

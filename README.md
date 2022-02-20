@@ -92,6 +92,12 @@ Run with `cargo run --example explosion_example --features inspector`
 
 ![Alt](./docs/explosion_example.gif "explosion_example gif")
 
+4[Mesh example](examples/mesh_example.rs)
+
+Run with `cargo run --example mesh_example --features inspector`
+
+![Alt](./docs/mesh_example.gif "mesh_example gif")
+
 ## TODO:
 
 - [x] computed visibility with AAB
@@ -108,6 +114,7 @@ Run with `cargo run --example explosion_example --features inspector`
 - [ ] examples of classic particle systems:
   - [ ] Fire
   - [x] Explosion
+  - [x] Mesh emission
   - [ ] Sci Fi Shield
 
 Contributions welcome !

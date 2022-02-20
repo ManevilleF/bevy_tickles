@@ -35,7 +35,7 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
-                rate: 100.0,
+                rate: 30.0,
                 shape: EmitterShape {
                     shape: Shape::ConvexMesh(ConvexMesh {
                         mesh: Mesh::from(Torus {
@@ -47,6 +47,18 @@ fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>)
                         nominal_center: Vec3::ZERO,
                     }),
                     thickness: 0.0,
+                    mode: EmissionMode::Spread(EmissionSpread {
+                        spreads: [
+                            AxisSpread::none(),
+                            AxisSpread::none(),
+                            AxisSpread {
+                                amount: 1.0 / 300.0,
+                                loop_mode: Default::default(),
+                                uniform: true,
+                            },
+                        ],
+                        ..Default::default()
+                    }),
                     ..Default::default()
                 },
                 ..Default::default()
