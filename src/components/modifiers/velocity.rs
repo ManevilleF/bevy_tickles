@@ -44,7 +44,7 @@ pub struct LinearVelocityOverLifeTime(RangeOrFixed<Vec3>);
 
 impl ParticleModifier for LinearVelocityOverLifeTime {
     fn apply(&self, particle: &mut Particle, delta_time: f32) {
-        particle.velocity += self.0.evaluate_linear(particle.alive_time_ratio()) * delta_time;
+        particle.velocity += self.0.sample(particle.alive_time_ratio()) * delta_time;
     }
 }
 
@@ -62,7 +62,7 @@ pub struct OrbitalVelocityOverLifeTime {
 
 impl ParticleModifier for OrbitalVelocityOverLifeTime {
     fn apply(&self, particle: &mut Particle, delta_time: f32) {
-        let values = self.velocity.evaluate_linear(particle.alive_time_ratio());
+        let values = self.velocity.sample(particle.alive_time_ratio());
         let mut target_velocity = Vec3::ZERO;
         let translation = particle.translation - self.offset;
         if values.x.is_normal() {

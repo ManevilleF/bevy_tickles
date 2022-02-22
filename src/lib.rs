@@ -5,7 +5,7 @@
 //! [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 //! [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 //!
-//! Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system
+//! CPU based Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system.
 //!
 //! > This is a work in progress with many missing features, it is not suitable for production.
 //! > As this lib is in very early stage, expect the API to change often

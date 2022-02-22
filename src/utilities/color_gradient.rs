@@ -74,7 +74,7 @@ impl ColorGradient {
 
     /// Linearly interpolates between two colors
     #[must_use]
-    pub fn evaluate_linear(a: Color, b: Color, delta: f32) -> Color {
+    pub fn sample_color(a: Color, b: Color, delta: f32) -> Color {
         let min = Vec4::from(a.as_rgba());
         let max = Vec4::from(b.as_rgba());
         Color::from(min + (max - min) * delta.clamp(0.0, 1.0))
@@ -143,6 +143,6 @@ impl ColorGradient {
         let input1 = self.points[index2].pos;
         let delta = (pos - input0) / (input1 - input0);
 
-        Self::evaluate_linear(self.points[index1].color, self.points[index2].color, delta)
+        Self::sample_color(self.points[index1].color, self.points[index2].color, delta)
     }
 }

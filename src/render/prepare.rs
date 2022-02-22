@@ -62,10 +62,10 @@ pub fn prepare_particles(
                     | ((color[1] * 255.0) as u32) << 8
                     | ((color[2] * 255.0) as u32) << 16
                     | ((color[3] * 255.0) as u32) << 24;
+                let matrix = particle.transform.compute_matrix();
                 let positions = QUAD_VERTEX_POSITIONS.map(|[x, y]| {
-                    (particle.transform.translation
-                        + particle.transform.right() * x * particle.size.x
-                        + particle.transform.up() * y * particle.size.y)
+                    matrix
+                        .transform_point3(Vec3::new(x * particle.size.x, y * particle.size.y, 0.0))
                         .into()
                 });
                 QUAD_INDICES

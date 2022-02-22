@@ -55,7 +55,7 @@ impl ParticleParams {
         start_direction: Vec3,
         rng: &mut impl Rng,
     ) -> Particle {
-        let lifetime = self.start_lifetime.evaluate(rng);
+        let lifetime = self.start_lifetime.evaluate_rng(rng);
         Particle {
             translation: position,
             rotation: match self.rotation {
@@ -66,15 +66,15 @@ impl ParticleParams {
                     start_rotation,
                     start_angular_velocity,
                 } => ParticleRotation::FreeRotation {
-                    rotation: start_rotation.evaluate(rng),
-                    angular_velocity: start_angular_velocity.evaluate(rng),
+                    rotation: start_rotation.evaluate_rng(rng),
+                    angular_velocity: start_angular_velocity.evaluate_rng(rng),
                 },
             },
-            size: self.start_size.evaluate(rng),
+            size: self.start_size.evaluate_rng(rng),
             lifetime,
             start_lifetime: lifetime,
             color: self.start_color.evaluate(rng.gen_range(0.0..=1.0)),
-            velocity: start_direction * self.start_speed.evaluate(rng),
+            velocity: start_direction * self.start_speed.evaluate_rng(rng),
             start_direction,
         }
     }

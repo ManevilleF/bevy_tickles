@@ -86,10 +86,19 @@ impl From<RangeInclusive<Vec3>> for RangeOrFixed<Vec3> {
 impl RangeOrFixed<f32> {
     /// Evaluates the float value using `rng`
     #[must_use]
-    pub fn evaluate(&self, rng: &mut impl Rng) -> f32 {
+    pub fn evaluate_rng(&self, rng: &mut impl Rng) -> f32 {
         match self {
-            RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range { min, max } => rng.gen_range(*min..=*max),
+            Self::Fixed(v) => *v,
+            Self::Range { min, max } => rng.gen_range(*min..=*max),
+        }
+    }
+
+    /// Samples the float value
+    #[must_use]
+    pub fn sample(&self, delta: f32) -> f32 {
+        match self {
+            Self::Fixed(v) => *v,
+            Self::Range { min, max } => (max - min).mul_add(delta, *min),
         }
     }
 }
@@ -97,10 +106,19 @@ impl RangeOrFixed<f32> {
 impl RangeOrFixed<usize> {
     /// Evaluates the usize value using `rng`
     #[must_use]
-    pub fn evaluate(&self, rng: &mut impl Rng) -> usize {
+    pub fn evaluate_rng(&self, rng: &mut impl Rng) -> usize {
         match self {
-            RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range { min, max } => rng.gen_range(*min..=*max),
+            Self::Fixed(v) => *v,
+            Self::Range { min, max } => rng.gen_range(*min..=*max),
+        }
+    }
+
+    /// Samples the usize value
+    #[must_use]
+    pub fn sample(&self, delta: f32) -> usize {
+        match self {
+            Self::Fixed(v) => *v,
+            Self::Range { min, max } => ((max - min) as f32).mul_add(delta, *min as f32) as usize,
         }
     }
 }
@@ -110,8 +128,8 @@ impl RangeOrFixed<Vec3> {
     #[must_use]
     pub fn evaluate_rng(&self, rng: &mut impl Rng) -> Vec3 {
         match self {
-            RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range { min, max } => Vec3::new(
+            Self::Fixed(v) => *v,
+            Self::Range { min, max } => Vec3::new(
                 rng.gen_range(min.x..=max.x),
                 rng.gen_range(min.y..=max.y),
                 rng.gen_range(min.z..=max.z),
@@ -119,12 +137,12 @@ impl RangeOrFixed<Vec3> {
         }
     }
 
-    /// Evaluates the usize value using linear interpolation
+    /// Samples the Vec3 Value
     #[must_use]
-    pub fn evaluate_linear(&self, delta: f32) -> Vec3 {
+    pub fn sample(&self, delta: f32) -> Vec3 {
         match self {
-            RangeOrFixed::Fixed(v) => *v,
-            RangeOrFixed::Range { min, max } => {
+            Self::Fixed(v) => *v,
+            Self::Range { min, max } => {
                 let delta = delta.clamp(0.0, 1.0);
                 Vec3::new(
                     (max.x - min.x).mul_add(delta, min.x),

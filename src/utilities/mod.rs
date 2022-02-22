@@ -2,19 +2,10 @@ mod color_gradient;
 mod color_or_gradient;
 mod range_or_fixed;
 
-use crate::Vec3;
-use bevy::math::{Mat3, Quat};
 pub use color_gradient::ColorGradient;
 pub use color_or_gradient::ColorOrGradient;
 use rand::Rng;
 pub use range_or_fixed::RangeOrFixed;
-
-pub(crate) fn rotation_forward(forward: Vec3) -> Quat {
-    let forward = forward.normalize();
-    let right = Vec3::Y.cross(forward).normalize();
-    let up = forward.cross(right);
-    Quat::from_mat3(&Mat3::from_cols(right, up, forward))
-}
 
 pub(crate) fn radius_spread(radius: f32, thickness: f32, spread_amount: f32) -> f32 {
     let ratio = (1.0 - thickness).clamp(0.0, 1.0);

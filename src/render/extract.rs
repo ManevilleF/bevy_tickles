@@ -33,7 +33,7 @@ pub fn extract_particles(
         .expect("Particle systems do not support multiple cameras yet");
     // Clear last frame extracted particles
     extracted_particles.particles.clear();
-    for (transform, particles, mut rng, material, render_mode, visibility) in query.iter_mut() {
+    for (ps_transform, particles, mut rng, material, render_mode, visibility) in query.iter_mut() {
         // skips invisible particle systems
         if !visibility.is_visible {
             continue;
@@ -52,7 +52,7 @@ pub fn extract_particles(
                 (atlas.texture.id, Some((sheet, atlas)))
             }
         };
-        let matrix: Mat4 = transform.compute_matrix();
+        let matrix: Mat4 = ps_transform.compute_matrix();
         let extracted = particles.iter().map(|p| {
             let mut transform = Transform::from_translation(if particles.world_space {
                 p.translation

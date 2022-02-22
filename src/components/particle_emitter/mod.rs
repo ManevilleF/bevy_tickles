@@ -100,7 +100,7 @@ impl ParticleEmitter {
             .filter(|b| {
                 b.time >= self.current_delta_time && b.time < self.current_delta_time + delta_time
             })
-            .map(|b| b.count.evaluate(rng))
+            .map(|b| b.count.evaluate_rng(rng))
             .sum();
         self.current_delta_time += delta_time;
         // emission over time

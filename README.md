@@ -7,7 +7,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 
-Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system
+CPU based Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system.
 
 > This is a work in progress with many missing features, it is not suitable for production.
 > As this lib is in very early stage, expect the API to change often
@@ -102,7 +102,6 @@ Run with `cargo run --example mesh_example --features inspector`
 
 - [x] computed visibility with AAB
 - [x] Duration/Looping/Infinite particle emission
-- [ ] Curves and gradients implementation
 - [ ] Complete modifier list
 - [ ] Sub Emitters and callbacks (trails/death)
 - [ ] Curves
@@ -111,6 +110,7 @@ Run with `cargo run --example mesh_example --features inspector`
 - [ ] Lit particles
 - [x] Perlin noise
 - [ ] Uniform random emission
+- [ ] particle stretching
 - [ ] examples of classic particle systems:
   - [ ] Fire
   - [x] Explosion
@@ -118,3 +118,8 @@ Run with `cargo run --example mesh_example --features inspector`
   - [ ] Sci Fi Shield
 
 Contributions welcome !
+
+## Similar projects:
+
+- [bevy_hanabi](https://github.com/djeedai/bevy_hanabi): GPU based particles
+- [bevy_prototype_particles](https://github.com/james7132/bevy_prototype_particles): CPU based particles

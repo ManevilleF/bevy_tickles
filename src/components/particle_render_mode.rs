@@ -1,6 +1,6 @@
-use crate::{rotation_forward, Particle};
+use crate::{Particle, Vec3};
 use bevy::ecs::reflect::ReflectComponent;
-use bevy::prelude::{Component, EulerRot, GlobalTransform, Quat, Reflect, Transform};
+use bevy::prelude::{Component, GlobalTransform, Quat, Reflect, Transform};
 
 /// Defines how the particle billboard is aligned
 #[derive(Debug, Copy, Clone, Reflect)]
@@ -77,40 +77,33 @@ impl ParticleRenderMode {
         transform: &mut Transform,
         camera_transform: &GlobalTransform,
     ) {
-        let (x, y) = match self {
-            ParticleRenderMode::HorizontalBillBoard => (1.5, 0.0),
+        match self {
+            ParticleRenderMode::HorizontalBillBoard => {
+                transform.rotation = Quat::from_rotation_x(1.5);
+            }
             ParticleRenderMode::VerticalBillboard => {
-                let (_x, y, _z) = rotation_forward(
-                    (camera_transform.translation - transform.translation).normalize_or_zero(),
-                )
-                .to_euler(EulerRot::XYZ);
-                (0.0, y)
+                let delta = transform.translation - camera_transform.translation;
+                transform.rotation = Quat::from_rotation_y(delta.x.atan2(delta.z));
             }
             ParticleRenderMode::BillBoard { alignment } => match alignment {
                 BillBoardAlignment::View => {
-                    let (x, y, _z) =
-                        rotation_forward(camera_transform.local_z()).to_euler(EulerRot::XYZ);
-                    (x, y)
+                    transform.rotation = -camera_transform.rotation;
                 }
-                BillBoardAlignment::World => (0., 0.),
-                BillBoardAlignment::Local => {
-                    let (x, y, _z) = transform.rotation.to_euler(EulerRot::XYZ);
-                    (x, y)
+                BillBoardAlignment::World => {
+                    transform.rotation = Quat::IDENTITY;
                 }
+                BillBoardAlignment::Local => (),
                 BillBoardAlignment::Facing => {
-                    let (x, y, _z) = rotation_forward(
-                        (camera_transform.translation - transform.translation).normalize_or_zero(),
-                    )
-                    .to_euler(EulerRot::XYZ);
-                    (x, y)
+                    transform.look_at(camera_transform.translation, Vec3::Y);
                 }
                 BillBoardAlignment::Direction => {
-                    let (x, y, _z) =
-                        rotation_forward(particle.non_zero_direction()).to_euler(EulerRot::XYZ);
-                    (x, y)
+                    transform.look_at(
+                        particle.translation + particle.non_zero_direction(),
+                        Vec3::Y,
+                    );
                 }
             },
         };
-        transform.rotation = Quat::from_euler(EulerRot::XYZ, x, y, particle.rotation());
+        transform.rotation *= Quat::from_rotation_z(particle.rotation());
     }
 }
