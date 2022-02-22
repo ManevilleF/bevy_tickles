@@ -1,6 +1,6 @@
 #![allow(clippy::needless_pass_by_value)]
 use crate::render::{ExtractedParticle, ExtractedParticles};
-use crate::{Particle, ParticleMaterial, ParticleRenderMode, ParticleRng, ParticleSystem};
+use crate::{Particle, ParticleMaterial, ParticleRenderMode, ParticleSystem};
 use bevy::prelude::*;
 use bevy::render::RenderWorld;
 
@@ -15,10 +15,9 @@ pub fn extract_particles(
         ),
     >,
     texture_atlases: Res<Assets<TextureAtlas>>,
-    mut query: Query<(
+    query: Query<(
         &GlobalTransform,
         &ParticleSystem,
-        &mut ParticleRng,
         &ParticleMaterial,
         &ParticleRenderMode,
         &ComputedVisibility,
@@ -33,7 +32,7 @@ pub fn extract_particles(
         .expect("Particle systems do not support multiple cameras yet");
     // Clear last frame extracted particles
     extracted_particles.particles.clear();
-    for (ps_transform, particles, mut rng, material, render_mode, visibility) in query.iter_mut() {
+    for (ps_transform, particles, material, render_mode, visibility) in query.iter() {
         // skips invisible particle systems
         if !visibility.is_visible {
             continue;
@@ -64,7 +63,7 @@ pub fn extract_particles(
                 transform,
                 color: particle.color,
                 rect: if let Some((sheet, atlas)) = anim {
-                    Some((sheet.mode.rect(atlas, &particle, rng.rng()), atlas.size))
+                    Some((sheet.mode.rect(atlas, &particle), atlas.size))
                 } else {
                     None
                 },

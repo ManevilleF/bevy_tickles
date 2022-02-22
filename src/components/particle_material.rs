@@ -3,7 +3,6 @@ use bevy::ecs::reflect::ReflectComponent;
 use bevy::prelude::{Component, Handle, Image, Reflect, TextureAtlas};
 use bevy::render::texture::DEFAULT_IMAGE_HANDLE;
 use bevy::sprite::Rect;
-use rand::Rng;
 
 /// Defines the looping behaviour of the animated sheet
 #[derive(Debug, Copy, Clone, Reflect)]
@@ -42,8 +41,9 @@ pub struct TextureSheetAnimation {
 pub enum TextureSheetMode {
     /// Use a single cell of the texture sheet
     FixedIndex(usize),
-    /// Use a random index of the texture sheet
-    RandomIndex,
+    // TODO: implement this
+    // /// Use a random index of the texture sheet
+    // RandomIndex,
     /// Change the cell over time
     AnimateOverTime(TextureSheetAnimation),
     /// Change the cell over the particle lifetime
@@ -131,18 +131,10 @@ impl TextureSheetAnimation {
 
 impl TextureSheetMode {
     /// Retrieves the texture cell bounds (`Rect`) of the texture sheet related to the given `particle`
-    pub fn rect(
-        &self,
-        texture_atlas: &TextureAtlas,
-        particle: &Particle,
-        rng: &mut impl Rng,
-    ) -> Rect {
+    #[must_use]
+    pub fn rect(&self, texture_atlas: &TextureAtlas, particle: &Particle) -> Rect {
         match self {
             TextureSheetMode::FixedIndex(i) => texture_atlas.textures[*i],
-            TextureSheetMode::RandomIndex => {
-                let index = rng.gen_range(0..texture_atlas.textures.len());
-                texture_atlas.textures[index]
-            }
             TextureSheetMode::AnimateOverLifetime(animation) => {
                 animation.rect(texture_atlas, particle, Particle::alive_time_ratio)
             }

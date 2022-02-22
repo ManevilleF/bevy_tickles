@@ -29,11 +29,12 @@ fn spawn_particle_system(
         })
         .insert(FlyCam);
     commands.spawn_bundle(DirectionalLightBundle::default());
+    let scorch_texture = asset_server.load("kenney/scorch_01.png");
     let smoke_texture = asset_server.load("smoke.png");
     let explosion_texture = asset_server.load("explosion.png");
     let explosion_texture_atlas = atlases.add(TextureAtlas::from_grid(
         explosion_texture,
-        Vec2::new(256.0, 256.0),
+        Vec2::splat(256.0),
         8,
         6,
     ));
@@ -47,7 +48,6 @@ fn spawn_particle_system(
             material: ParticleTextureSheet {
                 texture_atlas: explosion_texture_atlas.clone(),
                 mode: TextureSheetMode::AnimateOverLifetime(TextureSheetAnimation {
-                    start_index: 0,
                     looping_mode: TextureSheetLoopingMode::None,
                     ..Default::default()
                 }),
@@ -123,7 +123,7 @@ fn spawn_particle_system(
         .insert(ColorOverLifeTime(
             ColorGradient::empty()
                 .add_point(0.0, Color::NONE)
-                .add_point(0.5, Color::WHITE)
+                .add_point(0.5, Color::GRAY)
                 .add_point(1.0, Color::NONE),
         ))
         .insert(SizeOverTime(1.5))
@@ -135,11 +135,7 @@ fn spawn_particle_system(
     commands
         .spawn_bundle(ParticleSystemBundle {
             transform: Transform::from_xyz(0., 0., 0.),
-            material: ParticleTextureSheet {
-                texture_atlas: explosion_texture_atlas,
-                mode: TextureSheetMode::FixedIndex(3),
-            }
-            .into(),
+            material: ParticleMaterial::Image(scorch_texture),
             particle_params: ParticleParams {
                 start_size: 1.0.into(),
                 start_speed: (5.0..=6.0).into(),
@@ -168,7 +164,7 @@ fn spawn_particle_system(
         })
         .insert(ColorOverLifeTime(
             ColorGradient::empty()
-                .add_point(0.0, Color::WHITE)
+                .add_point(0.0, Color::ORANGE_RED)
                 .add_point(1.0, Color::NONE),
         ))
         .insert(ParticleGravity(Vec3::Y * -1.5))

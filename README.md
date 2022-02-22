@@ -92,7 +92,7 @@ Run with `cargo run --example explosion_example --features inspector`
 
 ![Alt](./docs/explosion_example.gif "explosion_example gif")
 
-4[Mesh example](examples/mesh_example.rs)
+4. [Mesh example](examples/mesh_example.rs)
 
 Run with `cargo run --example mesh_example --features inspector`
 
@@ -109,7 +109,8 @@ Run with `cargo run --example mesh_example --features inspector`
 - [ ] Multi camera support
 - [ ] Lit particles
 - [x] Perlin noise
-- [ ] Uniform random emission
+- [x] Spread emission
+- [ ] Emission Stop/Pause behaviors
 - [ ] particle stretching
 - [ ] examples of classic particle systems:
   - [ ] Fire
