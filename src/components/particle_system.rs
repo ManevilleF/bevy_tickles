@@ -76,9 +76,7 @@ impl ParticleSystem {
     pub fn push(&mut self, mut particle: Particle, transform: &GlobalTransform) {
         if self.world_space {
             let matrix = transform.compute_matrix();
-            particle.translation = matrix.transform_point3(particle.translation);
-            particle.velocity = matrix.transform_point3(particle.velocity);
-            particle.start_direction = matrix.transform_point3(particle.start_direction);
+            particle = particle.transformed(&matrix);
         }
         self.particles.push(particle);
     }

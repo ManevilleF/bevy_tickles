@@ -130,6 +130,8 @@ impl Particle {
     pub fn transformed(self, matrix: &Mat4) -> Self {
         Self {
             translation: matrix.transform_point3(self.translation),
+            velocity: matrix.transform_vector3(self.velocity),
+            start_direction: matrix.transform_vector3(self.start_direction),
             ..self
         }
     }

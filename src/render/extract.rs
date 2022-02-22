@@ -1,6 +1,6 @@
 #![allow(clippy::needless_pass_by_value)]
 use crate::render::{ExtractedParticle, ExtractedParticles};
-use crate::{ParticleMaterial, ParticleRenderMode, ParticleRng, ParticleSystem};
+use crate::{Particle, ParticleMaterial, ParticleRenderMode, ParticleRng, ParticleSystem};
 use bevy::prelude::*;
 use bevy::render::RenderWorld;
 
@@ -53,23 +53,22 @@ pub fn extract_particles(
             }
         };
         let matrix: Mat4 = ps_transform.compute_matrix();
-        let extracted = particles.iter().map(|p| {
-            let mut transform = Transform::from_translation(if particles.world_space {
-                p.translation
-            } else {
-                matrix.transform_point3(p.translation)
-            });
-            render_mode.apply_to_particle(p, &mut transform, camera_transform);
+        let extracted = particles.iter().cloned().map(|mut particle: Particle| {
+            if !particles.world_space {
+                particle = particle.transformed(&matrix);
+            }
+            let mut transform = Transform::from_translation(particle.translation);
+            render_mode.apply_to_particle(&particle, &mut transform, camera_transform);
             ExtractedParticle {
                 image_handle_id,
                 transform,
-                color: p.color,
+                color: particle.color,
                 rect: if let Some((sheet, atlas)) = anim {
-                    Some((sheet.mode.rect(atlas, p, rng.rng()), atlas.size))
+                    Some((sheet.mode.rect(atlas, &particle, rng.rng()), atlas.size))
                 } else {
                     None
                 },
-                size: Vec2::splat(p.size), // TODO: support stretched particles
+                size: Vec2::splat(particle.size),
             }
         });
         extracted_particles.particles.extend(extracted);
