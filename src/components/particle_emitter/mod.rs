@@ -2,7 +2,7 @@ pub mod emitter_shape;
 
 use crate::RangeOrFixed;
 use bevy::ecs::reflect::ReflectComponent;
-use bevy::prelude::{Component, Reflect, Transform, Vec3};
+use bevy::prelude::{Component, Reflect, Transform};
 use bevy::reflect::FromReflect;
 use emitter_shape::{EmittedParticle, EmitterShape};
 use rand::Rng;
@@ -117,8 +117,7 @@ impl ParticleEmitter {
             .map(|_| {
                 let mut particle = self.shape.emit_particle(rng);
                 particle.position = matrix.transform_point3(particle.position);
-                particle.direction =
-                    matrix.transform_point3(particle.direction.try_normalize().unwrap_or(Vec3::Y));
+                particle.direction = matrix.transform_vector3(particle.direction);
                 particle
             })
             .collect()

@@ -92,6 +92,23 @@ impl ColorGradient {
             .add_point(1.0, Color::FUCHSIA)
     }
 
+    /// Solid White to transparent black gradient
+    #[must_use]
+    pub fn white_to_none() -> Self {
+        Self::empty()
+            .add_point(0.0, Color::WHITE)
+            .add_point(1.0, Color::NONE)
+    }
+
+    /// Smooth White gradient with start and end with full transparency
+    #[must_use]
+    pub fn smooth_white() -> Self {
+        Self::empty()
+            .add_point(0.0, Color::rgba(1., 1., 1., 0.))
+            .add_point(0.5, Color::WHITE)
+            .add_point(1.0, Color::rgba(1., 1., 1., 0.))
+    }
+
     /// Adds a point at `pos` with `color`.
     ///
     /// Note: If a point at `pos` already exists, it will be overwritten

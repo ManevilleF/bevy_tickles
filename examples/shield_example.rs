@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use bevy_flycam::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_tickles::prelude::shapes::Sphere;
+use bevy_tickles::components::modifiers::ColorOverLifeTime;
+use bevy_tickles::components::shapes::Sphere;
+use bevy_tickles::prelude::modifiers::SizeOverTime;
 use bevy_tickles::prelude::*;
 
 fn main() {
@@ -15,11 +17,7 @@ fn main() {
         .run();
 }
 
-fn spawn_particle_system(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut atlases: ResMut<Assets<TextureAtlas>>,
-) {
+fn spawn_particle_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn_bundle(PerspectiveCameraBundle {
             transform: Transform::from_xyz(0.0, 5.0, 20.0).looking_at(Vec3::ZERO, Vec3::Y),
@@ -27,46 +25,63 @@ fn spawn_particle_system(
         })
         .insert(FlyCam);
     commands.spawn_bundle(DirectionalLightBundle::default());
-    let fireworks_texture = asset_server.load("fireworks.png");
-    let texture_atlas = atlases.add(TextureAtlas::from_grid(
-        fireworks_texture,
-        Vec2::new(256.0, 256.0),
-        6,
-        5,
-    ));
+    let shield_texture = asset_server.load("kenney/circle_03.png");
     commands
         .spawn_bundle(ParticleSystemBundle {
-            transform: Transform::from_xyz(0., 0., 0.),
-            material: ParticleTextureSheet {
-                texture_atlas,
-                mode: TextureSheetMode::AnimateOverLifetime(TextureSheetAnimation {
-                    start_index: 0,
-                    looping_mode: TextureSheetLoopingMode::None,
-                    ..Default::default()
-                }),
-            }
-            .into(),
+            particle_system: Default::default(),
+            transform: Transform::from_xyz(0., 0., 0.).with_rotation(Quat::from_rotation_x(1.5)),
+            global_transform: Default::default(),
+            material: shield_texture.into(),
+            visibility: Default::default(),
+            aab: Default::default(),
             particle_params: ParticleParams {
-                start_size: RangeOrFixed::Range { min: 1.0, max: 4.0 },
+                start_size: RangeOrFixed::Fixed(0.5),
                 start_speed: 0.0.into(),
-                start_lifetime: 1.0.into(),
-                start_color: ColorGradient::rainbow().into(),
+                start_lifetime: 1.5.into(),
                 ..Default::default()
             },
             particle_emitter: ParticleEmitter {
-                rate: 300.0,
+                rate: 50.0,
                 shape: EmitterShape {
-                    shape: Shape::Sphere(Sphere {
-                        radius: 10.0,
+                    shape: Sphere {
+                        radius: 5.0,
                         hemisphere: false,
-                    }),
+                    }
+                    .into(),
                     thickness: 0.0,
+                    mode: EmissionSpread {
+                        spreads: [
+                            AxisSpread {
+                                amount: 0.1,
+                                loop_mode: SpreadLoopMode::Loop,
+                                uniform: true,
+                            },
+                            AxisSpread {
+                                amount: 0.1,
+                                loop_mode: SpreadLoopMode::Loop,
+                                uniform: true,
+                            },
+                            AxisSpread::none(),
+                        ],
+                        ..Default::default()
+                    }
+                    .into(),
                     ..Default::default()
                 },
                 ..Default::default()
             },
+            particle_render_mode: ParticleRenderMode::BillBoard {
+                alignment: BillBoardAlignment::Direction,
+            },
             ..Default::default()
         })
+        .insert(ColorOverLifeTime(
+            ColorGradient::empty()
+                .add_point(0.0, Color::rgba(0., 0., 1., 0.))
+                .add_point(0.5, Color::BLUE)
+                .add_point(1.0, Color::rgba(0., 0., 1., 0.)),
+        ))
+        .insert(SizeOverTime(1.1))
         .insert(Name::new("Particle System"));
 }
 
