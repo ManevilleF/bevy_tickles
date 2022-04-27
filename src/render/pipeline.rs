@@ -6,7 +6,7 @@ use bevy::render::render_resource::{
     BufferBindingType, BufferSize, ColorTargetState, ColorWrites, CompareFunction, DepthBiasState,
     DepthStencilState, FragmentState, FrontFace, MultisampleState, PolygonMode, PrimitiveState,
     PrimitiveTopology, RenderPipelineDescriptor, SamplerBindingType, ShaderStages,
-    SpecializedPipeline, StencilFaceState, StencilState, TextureFormat, TextureSampleType,
+    SpecializedRenderPipeline, StencilFaceState, StencilState, TextureFormat, TextureSampleType,
     TextureViewDimension, VertexAttribute, VertexBufferLayout, VertexFormat, VertexState,
     VertexStepMode,
 };
@@ -23,7 +23,7 @@ pub struct ParticlePipeline {
     pub(crate) image_layout: BindGroupLayout,
 }
 
-impl SpecializedPipeline for ParticlePipeline {
+impl SpecializedRenderPipeline for ParticlePipeline {
     type Key = ();
 
     fn specialize(&self, _key: Self::Key) -> RenderPipelineDescriptor {

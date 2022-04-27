@@ -45,7 +45,8 @@ use bevy::core_pipeline::Transparent3d;
 use bevy::log;
 use bevy::prelude::*;
 use bevy::render::{
-    render_phase::AddRenderCommand, render_resource::SpecializedPipelines, RenderApp, RenderStage,
+    render_phase::AddRenderCommand, render_resource::SpecializedRenderPipelines, RenderApp,
+    RenderStage,
 };
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::RegisterInspectable;
@@ -152,7 +153,7 @@ impl Plugin for ParticlesPlugin {
             render_app
                 .init_resource::<ParticleImageBindGroups>()
                 .init_resource::<ParticlePipeline>()
-                .init_resource::<SpecializedPipelines<ParticlePipeline>>()
+                .init_resource::<SpecializedRenderPipelines<ParticlePipeline>>()
                 .init_resource::<ParticleMeta>()
                 .init_resource::<ExtractedParticles>()
                 .add_render_command::<Transparent3d, DrawParticle>()
