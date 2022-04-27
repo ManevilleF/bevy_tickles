@@ -68,9 +68,9 @@ pub fn apply_rng_modifier<M>(
     }
 }
 
-pub fn compute_particles_aabb(mut query: Query<(&mut Aabb, &ParticleSystem)>) {
-    for (mut aabb, particles) in query.iter_mut() {
-        if let Some(bounding_box) = particles.compute_aabb() {
+pub fn compute_particles_aabb(mut query: Query<(&mut Aabb, &GlobalTransform, &ParticleSystem)>) {
+    for (mut aabb, transform, particles) in query.iter_mut() {
+        if let Some(bounding_box) = particles.compute_aabb(transform) {
             *aabb = bounding_box;
         }
     }

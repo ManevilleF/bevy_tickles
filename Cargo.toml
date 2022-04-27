@@ -59,6 +59,10 @@ name = "shield_example"
 required-features = ["inspector"]
 
 [[example]]
+name = "gun_example"
+required-features = ["inspector"]
+
+[[example]]
 name = "explosion_example"
 required-features = ["inspector"]
 

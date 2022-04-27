@@ -26,6 +26,16 @@ impl Deref for ParticleSystem {
 }
 
 impl ParticleSystem {
+    /// Creates a particle system in world space
+    #[inline]
+    #[must_use]
+    pub const fn world_space() -> Self {
+        Self {
+            world_space: true,
+            particles: vec![],
+        }
+    }
+
     // TODO: Benchmark this and try with `retain_mut` equivalent
     pub(crate) fn update(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
@@ -36,33 +46,35 @@ impl ParticleSystem {
 
     /// Computes the complete bounding box of the particle system
     #[must_use]
-    pub fn compute_aabb(&self) -> Option<Aabb> {
+    pub fn compute_aabb(&self, transform: &GlobalTransform) -> Option<Aabb> {
         if self.particles.is_empty() {
             return None;
         }
-        let (x_min, x_max) = match self.iter().map(|p| p.translation.x).minmax() {
+        let points: Vec<Vec3> = if self.world_space {
+            let matrix = transform.compute_matrix().inverse();
+            self.iter()
+                .map(|p| matrix.transform_point3(p.translation))
+                .collect()
+        } else {
+            self.iter().map(|p| p.translation).collect()
+        };
+        let (x_min, x_max) = match points.iter().map(|p| p.x).minmax() {
             MinMaxResult::NoElements => return None,
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
-        let (y_min, y_max) = match self.iter().map(|p| p.translation.y).minmax() {
+        let (y_min, y_max) = match points.iter().map(|p| p.y).minmax() {
             MinMaxResult::NoElements => return None,
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
-        let (z_min, z_max) = match self.iter().map(|p| p.translation.z).minmax() {
+        let (z_min, z_max) = match points.iter().map(|p| p.z).minmax() {
             MinMaxResult::NoElements => return None,
             MinMaxResult::OneElement(p) => (p, p),
             MinMaxResult::MinMax(a, b) => (a, b),
         };
         let min = Vec3::new(x_min, y_min, z_min);
         let max = Vec3::new(x_max, y_max, z_max);
-        // TODO: check if this works before enabling
-        // if self.world_space {
-        //     let matrix = transform.compute_matrix().inverse();
-        //     min = matrix.transform_point3(min);
-        //     max = matrix.transform_point3(max);
-        // }
         Some(Aabb::from_min_max(min, max))
     }
 
