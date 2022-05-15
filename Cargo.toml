@@ -4,7 +4,7 @@ version = "0.0.1"
 edition = "2021"
 authors = ["Felix de Maneville <felix.maneville@gmail.com>"]
 description = "Particle systems for Bevy engine"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 keywords = ["hexagon", "bestagon", "bevy", "geometry"]
 categories = ["game-development", "mathematics"]
 repository = "https://github.com/ManevilleF/bevy_particles"
@@ -52,6 +52,14 @@ required-features = ["inspector"]
 
 [[example]]
 name = "animated_example"
+required-features = ["inspector"]
+
+[[example]]
+name = "shield_example"
+required-features = ["inspector"]
+
+[[example]]
+name = "gun_example"
 required-features = ["inspector"]
 
 [[example]]

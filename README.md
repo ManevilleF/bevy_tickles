@@ -4,7 +4,8 @@
 
 [![workflow](https://github.com/ManevilleF/bevy_tickles/actions/workflows/rust.yml/badge.svg)](https://github.com/ManevilleF/bevy_tickles/actions/workflows/rust.yml)
 
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE-MIT)
+[![Apache 2.0 licensed](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](./LICENSE-APACHE)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 
 CPU based Particle systems plugin for [bevy](https://bevyengine.org) inspired by `Unity3D` *shuriken* particle system.
@@ -116,7 +117,7 @@ Run with `cargo run --example mesh_example --features inspector`
   - [ ] Fire
   - [x] Explosion
   - [x] Mesh emission
-  - [ ] Sci Fi Shield
+  - [x] Sci Fi Shield
 
 Contributions welcome !
 

@@ -1,8 +1,8 @@
 use crate::Particle;
 use bevy::ecs::reflect::ReflectComponent;
+use bevy::math::const_vec3;
 use bevy::prelude::{Component, GlobalTransform, Reflect, Vec3};
 use bevy::render::primitives::Aabb;
-use itertools::{Itertools, MinMaxResult};
 use std::ops::Deref;
 
 /// Particle System simulation container
@@ -26,6 +26,16 @@ impl Deref for ParticleSystem {
 }
 
 impl ParticleSystem {
+    /// Creates a particle system in world space
+    #[inline]
+    #[must_use]
+    pub const fn world_space() -> Self {
+        Self {
+            world_space: true,
+            particles: vec![],
+        }
+    }
+
     // TODO: Benchmark this and try with `retain_mut` equivalent
     pub(crate) fn update(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
@@ -36,34 +46,26 @@ impl ParticleSystem {
 
     /// Computes the complete bounding box of the particle system
     #[must_use]
-    pub fn compute_aabb(&self) -> Option<Aabb> {
+    pub fn compute_aabb(&self, transform: &GlobalTransform) -> Option<Aabb> {
+        const VEC3_MIN: Vec3 = const_vec3!([std::f32::MIN, std::f32::MIN, std::f32::MIN]);
+        const VEC3_MAX: Vec3 = const_vec3!([std::f32::MAX, std::f32::MAX, std::f32::MAX]);
+
         if self.particles.is_empty() {
             return None;
         }
-        let (x_min, x_max) = match self.iter().map(|p| p.translation.x).minmax() {
-            MinMaxResult::NoElements => return None,
-            MinMaxResult::OneElement(p) => (p, p),
-            MinMaxResult::MinMax(a, b) => (a, b),
-        };
-        let (y_min, y_max) = match self.iter().map(|p| p.translation.y).minmax() {
-            MinMaxResult::NoElements => return None,
-            MinMaxResult::OneElement(p) => (p, p),
-            MinMaxResult::MinMax(a, b) => (a, b),
-        };
-        let (z_min, z_max) = match self.iter().map(|p| p.translation.z).minmax() {
-            MinMaxResult::NoElements => return None,
-            MinMaxResult::OneElement(p) => (p, p),
-            MinMaxResult::MinMax(a, b) => (a, b),
-        };
-        let min = Vec3::new(x_min, y_min, z_min);
-        let max = Vec3::new(x_max, y_max, z_max);
-        // TODO: check if this works before enabling
-        // if self.world_space {
-        //     let matrix = transform.compute_matrix().inverse();
-        //     min = matrix.transform_point3(min);
-        //     max = matrix.transform_point3(max);
-        // }
-        Some(Aabb::from_min_max(min, max))
+        let mut minimum = VEC3_MAX;
+        let mut maximum = VEC3_MIN;
+        let matrix = self
+            .world_space
+            .then(|| transform.compute_matrix().inverse());
+
+        for p in &self.particles {
+            minimum =
+                minimum.min(matrix.map_or(p.translation, |m| m.transform_point3(p.translation)));
+            maximum =
+                maximum.max(matrix.map_or(p.translation, |m| m.transform_point3(p.translation)));
+        }
+        Some(Aabb::from_min_max(minimum, maximum))
     }
 
     /// Adds a particle to the system

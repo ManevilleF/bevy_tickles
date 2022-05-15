@@ -122,8 +122,13 @@ impl Plugin for ParticlesPlugin {
             .register_inspectable::<PerlinNoise>()
             .register_inspectable::<ColorOrGradient>();
 
+        // TODO: rework the messy system order
         app.add_system(systems::update_particle_system.label(PARTICLE_UPDATE))
-            .add_system(systems::emit_particles.label(PARTICLE_EMISSION))
+            .add_system(
+                systems::emit_particles
+                    .label(PARTICLE_EMISSION)
+                    .after(PARTICLE_UPDATE),
+            )
             .add_system(systems::compute_particles_aabb.after(PARTICLE_UPDATE))
             // TODO: merge all systems in one to avoid so many queries
             .add_system(apply_system_modifier::<MaxParticleCount>.after(PARTICLE_EMISSION))
@@ -139,8 +144,8 @@ impl Plugin for ParticlesPlugin {
             .add_system(apply_modifier::<SizeOverSpeed>.after(PARTICLE_UPDATE))
             .add_system(apply_modifier::<RotationOverVelocity>.after(PARTICLE_UPDATE))
             .add_system(apply_modifier::<RotationOverTime>.after(PARTICLE_UPDATE))
-            .add_system(apply_modifier::<ColorOverLifeTime>.after(PARTICLE_UPDATE))
-            .add_system(apply_modifier::<ColorOverSpeed>.after(PARTICLE_UPDATE))
+            .add_system(apply_modifier::<ColorOverLifeTime>.after(PARTICLE_EMISSION))
+            .add_system(apply_modifier::<ColorOverSpeed>.after(PARTICLE_EMISSION))
             .add_system(apply_rng_modifier::<PerlinNoise>.after(PARTICLE_UPDATE));
 
         let mut shaders = app

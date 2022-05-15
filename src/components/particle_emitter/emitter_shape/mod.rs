@@ -230,6 +230,12 @@ impl Default for EmitterShape {
     }
 }
 
+impl From<EmissionSpread> for EmissionMode {
+    fn from(spread: EmissionSpread) -> Self {
+        Self::Spread(spread)
+    }
+}
+
 impl Default for EmissionMode {
     fn default() -> Self {
         Self::Random
